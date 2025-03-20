@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { utilDbSave } from "../utils/db-sqlite"
 
 // save a flashcard to database

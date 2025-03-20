@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-undef
 const db = useDatabase()
 
 export const utilDbInit = async () => {
