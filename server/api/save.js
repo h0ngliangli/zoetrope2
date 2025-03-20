@@ -7,13 +7,19 @@ export default defineEventHandler(async (event) => {
   logger.debug("body %o", body)
   let { q = "", a = "", tags = "", note = "" } = body
   if (!q || !a) {
-    throw new Error("Question and answer cannot be empty")
+    return {
+      ok: false,
+      statusCode: 400,
+      message: "Question and answer cannot be empty",
+    }
   }
-  // convert tags to array
-  if (tags) {
-    tags = tags.split(" ").filter((tag) => tag)
-  }
-
   const id = await utilDbSave({ q, a, tags, note })
-  return { id }
+  return {
+    ok: true,
+    statusCode: 200,
+    message: "Flashcard saved",
+    data: {
+      id: id,
+    }
+  }
 })

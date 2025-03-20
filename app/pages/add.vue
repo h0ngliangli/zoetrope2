@@ -2,8 +2,7 @@
   <div>
     <FFlashcard v-model="model" />
     <div class="mt-4 ml-4">
-      <UButton label="Save" @click="onSave" /> 
-      
+      <UButton label="Save" @click="onSave" />
     </div>
     <div>Flashcard data: {{ model }}</div>
   </div>
@@ -16,13 +15,15 @@ const model = defineModel({
 })
 
 const onSave = async () => {
-  const { id } = await $fetch("/api/save", {
+  const response = await $fetch("/api/save", {
     method: "POST",
     body: model.value,
   })
-  const toast = useToast()
-  toast.add({
-    title: `Flashcard ${id} saved successfully`,
-  })
+  if (response.ok) {
+    const id = response.data.id
+    showSuccessToast(`Flashcard ${id} saved`)
+  } else {
+    showErrorToast(response.message)
+  }
 }
 </script>
