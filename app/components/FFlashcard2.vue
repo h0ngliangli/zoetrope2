@@ -1,19 +1,19 @@
 <template>
   <div class="flashcard-body">
-    <FField v-model="state.q" label="Question" placeholder="What's your question?" />
+    <FField v-model="state.q" label="提问" placeholder="你的问题是什么?" />
+    <FField v-model="state.tags" label="标签" placeholder="标签1 标签2 ..." />
     <FField
       v-model="state.a"
-      label="Answer"
-      placeholder="Enter the answer"
+      label="答案"
+      placeholder="你的答案是什么?"
       type="textarea"
     />
     <FField
       v-model="state.note"
-      label="Note"
-      placeholder="Enter the note"
+      label="附注"
+      placeholder="附注内容"
       type="textarea"
     />
-    <FField v-model="state.tags" label="Tags" placeholder="tag1 tag2 ..." />
   </div>
 </template>
 

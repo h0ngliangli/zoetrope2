@@ -2,7 +2,12 @@
   <div>
     <FFlashcard2 />
     <div class="mt-4 ml-4">
-      <UButton label="Save" @click="onSave" />
+      <UButton
+        :loading="refLoadingState"
+        label="保存"
+        color="secondary"
+        @click="onSave"
+      />
     </div>
 
     <!-- Debug Info -->
@@ -24,6 +29,7 @@
 
 <script setup>
 const route = useRoute()
+const router = useRouter()
 const state = useState("editId", () => ({
   id: route.params.id,
   q: "",
@@ -31,6 +37,7 @@ const state = useState("editId", () => ({
   tags: "",
   note: "",
 }))
+const refLoadingState = ref(false)
 
 // const model = ref({ id: route.params.id, q: "123", a: "", tags: "", note: "" })
 // vue中直接调用async函数会导致ref无法显示，解决方法是将其放在setup函数中，然后在mounted钩子中调用
@@ -49,11 +56,14 @@ const setup = async () => {
     } else {
       showErrorToast(`没有找到id为${state.value.id}的卡片，你可以创建一个新的`)
       state.value.id = "new"
+      // window.location.pathname = "/edit-new"
+      router.push("/edit-new")
     }
   }
 }
 
 const onSave = async () => {
+  refLoadingState.value = true
   const response = await $fetch("/api/save", {
     method: "POST",
     body: { ...state.value },
@@ -64,7 +74,16 @@ const onSave = async () => {
   } else {
     showErrorToast(response.message)
   }
+  // 延期1秒关闭loading状态, 以便用户看到保存成功的提示
+  setTimeout(() => {
+    refLoadingState.value = false
+  }, 1000)
 }
+
+// watch(state, (newState, oldState) => {
+//   // 修改state.value.q不会触发这个watch
+//   console.log("state changed", newState)
+// })
 
 onMounted(setup)
 </script>
