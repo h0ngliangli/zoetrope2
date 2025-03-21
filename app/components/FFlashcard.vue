@@ -33,7 +33,10 @@ onMounted(() => {
   realModel.tags = model.value.tags
 })
 watchEffect(() => {
-  model.value = realModel
+  model.value.q = realModel.q
+  model.value.a = realModel.a
+  model.value.note = realModel.note
+  model.value.tags = realModel.tags
 })
 </script>
 

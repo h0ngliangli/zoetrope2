@@ -16,4 +16,9 @@ export default defineNuxtConfig({
       database: true,
     },
   },
+  routeRules: {
+    
+  },
+
+  ssr: false,
 })

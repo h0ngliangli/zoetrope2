@@ -1,6 +1,16 @@
 <template>
   <div>
-    <FlashcardEdit v-model="model" />
+    <Suspense>
+      <template #fallback>
+        <div>Loading...</div>
+      </template>
+      <FFlashcard2 />
+    </Suspense>
+    <div class="mt-4 ml-4">
+      <UButton label="Save" @click="onSave" />
+    </div>
+
+    <!-- Debug Info -->
     <USeparator class="h-8" />
     <div>
       <UCard>
@@ -10,7 +20,7 @@
         <div>
           <div>$route.fullPath = {{ $route.fullPath }}</div>
           <div>$route.params.id = {{ $route.params.id }}</div>
-          <div>model = {{ model }}</div>
+          <div>editId = {{ state }}</div>
         </div>
       </UCard>
     </div>
@@ -19,14 +29,45 @@
 
 <script setup>
 const route = useRoute()
-const model = ref({
+const state = useState("editId", () => ({
+  id: route.params.id,
   q: "",
   a: "",
   tags: "",
-})
-onMounted(async () => {
-  const response = await $fetch(`/api/get/${route.params.id}`)
-  console.log(response)
-  model.value = response
-})
+  note: "",
+}))
+
+// const model = ref({ id: route.params.id, q: "123", a: "", tags: "", note: "" })
+// vue中直接调用async函数会导致ref无法显示，解决方法是将其放在setup函数中，然后在mounted钩子中调用
+const setup = async () => {
+  if (state.value.id !== "new") {
+    const response = await $fetch(`/api/get/${state.value.id}`)
+    if (response.ok) {
+      console.log(response.data)
+      // model.value = response.data
+      state.value.q = response.data.q
+      state.value.a = response.data.a
+      state.value.tags = response.data.tags
+      state.value.note = response.data.note
+    } else {
+      showErrorToast(`没有找到id为${id}的卡片，你可以创建一个新的`)
+      state.value.id = "new"
+    }
+  }
+}
+
+const onSave = async () => {
+  const response = await $fetch("/api/save", {
+    method: "POST",
+    body: { ...state.value },
+  })
+  if (response.ok) {
+    state.value.id = response.data.id
+    showSuccessToast(`卡片 ${state.value.id} 保存成功`)
+  } else {
+    showErrorToast(response.message)
+  }
+}
+
+onMounted(setup)
 </script>

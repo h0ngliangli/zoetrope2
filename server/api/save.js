@@ -4,21 +4,31 @@ import { utilDbSave } from "../utils/db-sqlite"
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   logger.debug("body %o", body)
-  let { q = "", a = "", tags = "", note = "" } = body
+  let { id = "", q = "", a = "", tags = "", note = "" } = body
   if (!q || !a) {
     return {
       ok: false,
       statusCode: 400,
-      message: "Question and answer cannot be empty",
+      message: "问题和答案不能为空哦～",
     }
   }
-  const id = await utilDbSave({ q, a, tags, note })
-  return {
-    ok: true,
-    statusCode: 200,
-    message: "Flashcard saved",
-    data: {
-      id: id,
+  try {
+    id = await utilDbSave({ id, q, a, tags, note })
+    return {
+      ok: true,
+      statusCode: 200,
+      message: "保存成功",
+      data: {
+        id: id,
+      },
+    }
+  } catch (e) {
+    const message = "保存时出错了……"
+    logger.error("%s %o", message, e)
+    return {
+      ok: false,
+      statusCode: 500,
+      message: message,
     }
   }
 })
