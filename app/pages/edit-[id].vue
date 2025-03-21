@@ -56,8 +56,6 @@ const setup = async () => {
     } else {
       showErrorToast(`没有找到id为${state.value.id}的卡片，你可以创建一个新的`)
       state.value.id = "new"
-      // window.location.pathname = "/edit-new"
-      router.push("/edit-new")
     }
   }
 }
@@ -84,6 +82,12 @@ const onSave = async () => {
 //   // 修改state.value.q不会触发这个watch
 //   console.log("state changed", newState)
 // })
+
+// 通过函数watch来监听state.value.id的变化
+watch(() => state.value.id, (newId, oldId) => {
+  console.log("id changed", oldId, newId)
+  router.replace(`/edit-${newId}`)
+})
 
 onMounted(setup)
 </script>

@@ -2,16 +2,12 @@
 const refFoo = ref("foo")
 const refBar = ref("bar")
 const refFoo2 = useState("refFoo2", () => ({ q: "", a: "" }))
-console.log(refFoo2)
-console.log(refFoo2.value)
-console.log(refFoo2.value.q)
-console.log(refFoo2.value.q.value)    
 watch(refFoo, (newVal, oldVal) => {
   refBar.value = newVal
   refFoo2.value = newVal
 })
-watch(refFoo2, (newVal, oldVal) => {
-  console.log("refFoo2 changed", newVal)
+watch(() => refFoo2.value.q, (newVal, oldVal) => {
+  console.log("refFoo2.q changed", newVal)
 })
 </script>
 
