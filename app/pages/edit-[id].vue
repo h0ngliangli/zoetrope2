@@ -1,11 +1,6 @@
 <template>
   <div>
-    <Suspense>
-      <template #fallback>
-        <div>Loading...</div>
-      </template>
-      <FFlashcard2 />
-    </Suspense>
+    <FFlashcard2 />
     <div class="mt-4 ml-4">
       <UButton label="Save" @click="onSave" />
     </div>
@@ -44,13 +39,15 @@ const setup = async () => {
     const response = await $fetch(`/api/get/${state.value.id}`)
     if (response.ok) {
       console.log(response.data)
-      // model.value = response.data
+      // 这里可以直接将response.data赋值给state.value，
+      // 但为谨慎起见逐个赋值
+      // state.value = response.data
       state.value.q = response.data.q
       state.value.a = response.data.a
       state.value.tags = response.data.tags
       state.value.note = response.data.note
     } else {
-      showErrorToast(`没有找到id为${id}的卡片，你可以创建一个新的`)
+      showErrorToast(`没有找到id为${state.value.id}的卡片，你可以创建一个新的`)
       state.value.id = "new"
     }
   }
