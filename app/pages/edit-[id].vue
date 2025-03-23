@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-4">
     <FFlashcard2 />
     <div class="mt-4 ml-4">
       <UButton
