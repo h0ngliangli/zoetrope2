@@ -9,6 +9,7 @@
       size="xl"
       class="w-full"
       :placeholder="props.placeholder"
+      @keydown.esc="onEscape"
     />
     <UTextarea
       v-if="props.type === 'textarea'"
@@ -17,6 +18,7 @@
       size="xl"
       class="w-full"
       :placeholder="props.placeholder"
+      @keydown.esc="onEscape"
     />
   </UFormField>
 </template>
@@ -42,6 +44,11 @@ const props = defineProps({
     validator: (value) => ["readonly", "input", "textarea"].includes(value),
   },
 })
+
+// 用户按下esc键时，取消输入框的焦点
+const onEscape = () => {
+  document.activeElement.blur()
+}
 
 // eslint-disable-next-line vue/require-prop-types
 const model = defineModel({

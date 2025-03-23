@@ -4,10 +4,13 @@
     <div class="mt-4 ml-4">
       <UButton
         :loading="refLoadingState"
-        label="保存"
+        ref="refBtnSave"
+        label="保存(s)"
         color="secondary"
         @click="onSave"
+        class="mr-4"
       />
+      <UButton label="新建(n)" @click="onNew" />
     </div>
 
     <!-- Debug Info -->
@@ -37,6 +40,7 @@ const state = useState("editId", () => ({
   tags: "",
   note: "",
 }))
+const refBtnSave = useTemplateRef("refBtnSave")
 const refLoadingState = ref(false)
 
 // const model = ref({ id: route.params.id, q: "123", a: "", tags: "", note: "" })
@@ -78,15 +82,37 @@ const onSave = async () => {
   }, 1000)
 }
 
+const onNew = () => {
+  state.value.id = "new"
+  state.value.q = ""
+  state.value.a = ""
+  state.value.tags = ""
+  state.value.note = ""
+}
+
 // watch(state, (newState, oldState) => {
 //   // 修改state.value.q不会触发这个watch
 //   console.log("state changed", newState)
 // })
 
 // 通过函数watch来监听state.value.id的变化
-watch(() => state.value.id, (newId, oldId) => {
-  console.log("id changed", oldId, newId)
-  router.replace(`/edit-${newId}`)
+watch(
+  () => state.value.id,
+  (newId, oldId) => {
+    console.log("id changed", oldId, newId)
+    router.replace(`/edit-${newId}`)
+  }
+)
+
+// shortcuts
+defineShortcuts({
+  s: onSave,
+  n: onNew,
+  'escape': () => {
+    console.log("escape")
+    // 取消当前元素的焦点
+    document.activeElement.blur()
+  }
 })
 
 onMounted(setup)
