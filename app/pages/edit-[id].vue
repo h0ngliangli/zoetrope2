@@ -3,12 +3,12 @@
     <FFlashcard />
     <div class="mt-4 ml-4">
       <UButton
-        :loading="refLoadingState"
         ref="refBtnSave"
+        :loading="refLoadingState"
         label="保存(s)"
         color="secondary"
-        @click="onSave"
         class="mr-4"
+        @click="onSave"
       />
       <UButton label="新建(n)" @click="onNew" />
     </div>
@@ -108,11 +108,11 @@ watch(
 defineShortcuts({
   s: onSave,
   n: onNew,
-  'escape': () => {
+  escape: () => {
     console.log("escape")
     // 取消当前元素的焦点
     document.activeElement.blur()
-  }
+  },
 })
 
 onMounted(setup)

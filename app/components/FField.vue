@@ -47,7 +47,7 @@ const props = defineProps({
     type: String,
     required: false,
     default: "input",
-    validator: (value) => ["readonly", "input", "textarea"].includes(value),
+    validator: (value:string) => ["readonly", "input", "textarea"].includes(value),
   },
 
   focuskey: {
