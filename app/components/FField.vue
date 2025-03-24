@@ -57,7 +57,7 @@ const props = defineProps({
   },
 })
 
-const refInput = useTemplateRef("refInput")
+const refInput = ref<{ inputRef?: HTMLInputElement; textareaRef?: HTMLTextAreaElement }>({})
 
 // 用户按下esc键时，取消输入框的焦点
 const onEscape = () => {
