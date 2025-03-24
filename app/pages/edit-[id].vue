@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <FFlashcard2 />
+    <FFlashcard />
     <div class="mt-4 ml-4">
       <UButton
         :loading="refLoadingState"

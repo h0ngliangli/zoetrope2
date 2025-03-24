@@ -1,19 +1,21 @@
 <template>
   <div class="flashcard-body">
-    <FField v-model="realModel.q" label="Question" placeholder="What's your question?" />
+    <FField v-model="state.q" label="提问" placeholder="你的问题是什么?" focuskey="q"/>
+    <FField v-model="state.tags" label="标签" placeholder="标签1 标签2 ..." focuskey="t"/>
     <FField
-      v-model="realModel.a"
-      label="Answer"
-      placeholder="Enter the answer"
+      v-model="state.a"
+      label="答案"
+      placeholder="你的答案是什么?"
       type="textarea"
+      focuskey="a"
     />
     <FField
-      v-model="realModel.note"
-      label="Note"
-      placeholder="Enter the note"
+      v-model="state.note"
+      label="附注"
+      placeholder="附注内容"
       type="textarea"
+      focuskey="n"
     />
-    <FField v-model="realModel.tags" label="Tags" placeholder="tag1 tag2 ..." />
   </div>
 </template>
 
@@ -21,23 +23,7 @@
 // 为何这里使用reactive，而不是ref？
 // 因为model生成的是一个ref对象，如果用v-model="model.q"这样绑定，v-model得到的将不是ref
 // 对象，而是字符串对象。
-const realModel = reactive({ q: "", a: "", note: "", tags: "" })
-// eslint-disable-next-line vue/require-prop-types
-const model = defineModel({
-  default: { q: "", a: "", note: "", tags: "" },
-})
-onMounted(() => {
-  realModel.q = model.value.q
-  realModel.a = model.value.a
-  realModel.note = model.value.note
-  realModel.tags = model.value.tags
-})
-watchEffect(() => {
-  model.value.q = realModel.q
-  model.value.a = realModel.a
-  model.value.note = realModel.note
-  model.value.tags = realModel.tags
-})
+const state = useState("editId")
 </script>
 
 <style scoped>
