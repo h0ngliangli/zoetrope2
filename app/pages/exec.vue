@@ -27,7 +27,11 @@
     </div>
 
     <div>
-      <UButton class="m-2" :loading="refLoading" @click="onNext">
+      <UButton
+        class="m-2"
+        :loading="refLoading"
+        @click="onNext({ reload: false })"
+      >
         下一题
         <UKbd>enter</UKbd>
       </UButton>
@@ -36,7 +40,6 @@
         编辑 {{ state.id }}
         <UKbd>E</UKbd>
       </UButton>
-
     </div>
     <div>
       <UCollapsible v-model:open="refShowNote">
@@ -59,7 +62,6 @@
         <div>debug info<UKbd>D</UKbd></div>
         <template #content>
           <div>state = {{ state }}</div>
-          <div>answer = {{ a }}</div>
         </template>
       </UCollapsible>
     </div>
@@ -73,6 +75,7 @@ const state = useState(stateid, () => ({
   id: 0,
   q: "",
   a: "",
+  realA: "",
   tags: "",
   note: "",
 }))
@@ -81,20 +84,26 @@ const refResult = ref(null)
 const refLoading = ref(false)
 const refShowNote = ref(false)
 const refShowDebug = ref(false)
-const a = ref("")
+
 //
-const onNext = async () => {
+const onNext = async ({ reload = false }) => {
   refLoading.value = true
   refShowNote.value = false
   refResult.value = null
-  a.value = ""
-  const response = await $fetch("/api/get/random")
+  let response = null
+  if (reload && state.value.id !== 0) {
+    console.log("reloading ", state.value.id)
+    response = await $fetch(`/api/get/${state.value.id}`)
+  } else {
+    console.log("getting random")
+    response = await $fetch("/api/get/random")
+  }
   if (response.ok) {
     console.log(response.data)
     state.value.id = response.data.id
     state.value.q = response.data.q
     state.value.a = ""
-    a.value = response.data.a
+    state.value.realA = response.data.a
     state.value.tags = response.data.tags
     state.value.note = response.data.note
     onFocus()
@@ -114,7 +123,7 @@ const onCheckA = async (event) => {
     console.log("ctrl + enter pressed")
     // effect of checking answer
     await playCheckEffect()
-    if (a.value === state.value.a) {
+    if (state.value.realA === state.value.a) {
       console.log("correct")
       refResult.value = true
     } else {
@@ -153,7 +162,9 @@ const onEdit = () => {
 }
 
 defineShortcuts({
-  enter: onNext,
+  enter: () => {
+    onNext({ reload: false })
+  },
   a: () => {
     // TODO 这里为何不能调用onFocus？
     console.log("focus")
@@ -165,12 +176,12 @@ defineShortcuts({
   d: () => {
     refShowDebug.value = !refShowDebug.value
   },
-  e:() => {
+  e: () => {
     onEdit()
-  }
+  },
 })
 
 onMounted(() => {
-  onNext()
+  onNext({ reload: true })
 })
 </script>
