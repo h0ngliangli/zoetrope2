@@ -1,4 +1,5 @@
 const db = useDatabase()
+let ids = [] // 用于shuffle
 
 export const utilDbInit = async () => {
   // create tables
@@ -12,6 +13,8 @@ export const utilDbInit = async () => {
         log text,
         primary key (id autoincrement)
     )`
+  await _loadIds()
+  _shuffle(ids)
 }
 
 /**
@@ -37,7 +40,7 @@ export const utilDbSave = async ({
         .filter((tag) => tag)
         .join(" ") + " "
   }
-  if ((await _flashcardIdExists(id))) {
+  if (await _flashcardIdExists(id)) {
     console.log("updating flashcard")
     const sqlResult =
       await db.sql`update flashcard set q = ${q}, a = ${a}, tags = ${tags}, note = ${note} where id = ${id}`
@@ -47,6 +50,7 @@ export const utilDbSave = async ({
     const sqlResult =
       await db.sql`insert into flashcard (q, a, tags, note) values (${q}, ${a}, ${tags}, ${note})`
     logger.info("inserting flashcard %o", sqlResult)
+    _shuffleAdd(ids, sqlResult.lastInsertRowid)
     return sqlResult.lastInsertRowid
   }
 }
@@ -61,11 +65,47 @@ export const utilDbGet = async (id) => {
   return sqlResult.rows[0]
 }
 
+export const utilDbGetRandom = async () => {
+  if (ids.length === 0) {
+    await _loadIds()
+    _shuffle(ids)
+  }
+  const id = ids.pop()
+  logger.debug("ids %s left", ids.length)
+  return utilDbGet(id)
+}
+
 const _flashcardIdExists = async (id) => {
   logger.debug("checking if flashcard id exists %o", id)
   const sqlResult =
     await db.sql`select count(*) as count from flashcard where id = ${id}`
   logger.debug(sqlResult.rows[0].count > 0)
-  
+
   return sqlResult.rows[0].count > 0
+}
+
+const _loadIds = async () => {
+  const sqlResult = await db.sql`select id from flashcard`
+  ids = sqlResult.rows.map((row) => row.id)
+  logger.debug("loaded %s flashcard ids", ids.length)
+}
+
+// Fisher-Yates shuffle
+const _shuffle = (array) => {
+  let currentIndex = array.length,
+    randomIndex
+  while (currentIndex != 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex--
+    ;[array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ]
+  }
+  return array
+}
+
+const _shuffleAdd = (array, id) => {
+  const insertIndex = Math.floor(Math.random() * array.length)
+  array.splice(insertIndex, 0, id)
 }

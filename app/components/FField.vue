@@ -4,7 +4,7 @@
       {{ props.label }}
       <UKbd :value="props.focuskey" />
     </template>
-    <div v-if="props.type === 'readonly'" class="text-xl font-semibold">
+    <div v-if="props.type === 'readonly'" class="text-xl font-semibold p-2">
       {{ model }}
     </div>
     <UInput
@@ -47,7 +47,8 @@ const props = defineProps({
     type: String,
     required: false,
     default: "input",
-    validator: (value:string) => ["readonly", "input", "textarea"].includes(value),
+    validator: (value: string) =>
+      ["readonly", "input", "textarea"].includes(value),
   },
 
   focuskey: {
@@ -57,7 +58,10 @@ const props = defineProps({
   },
 })
 
-const refInput = ref<{ inputRef?: HTMLInputElement; textareaRef?: HTMLTextAreaElement }>({})
+const refInput = ref<{
+  inputRef?: HTMLInputElement
+  textareaRef?: HTMLTextAreaElement
+}>({})
 
 // 用户按下esc键时，取消输入框的焦点
 const onEscape = () => {

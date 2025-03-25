@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <FFlashcard />
+    <FFlashcard :state="stateid" />
     <div class="mt-4 ml-4">
       <UButton
         ref="refBtnSave"
@@ -23,7 +23,7 @@
         <div>
           <div>$route.fullPath = {{ $route.fullPath }}</div>
           <div>$route.params.id = {{ $route.params.id }}</div>
-          <div>editId = {{ state }}</div>
+          <div>state = {{ state }}</div>
         </div>
       </UCard>
     </div>
@@ -31,9 +31,10 @@
 </template>
 
 <script setup>
+const stateid = "edit"
 const route = useRoute()
 const router = useRouter()
-const state = useState("editId", () => ({
+const state = useState(stateid, () => ({
   id: route.params.id,
   q: "",
   a: "",
