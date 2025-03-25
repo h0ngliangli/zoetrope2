@@ -35,7 +35,7 @@ const stateid = "edit"
 const route = useRoute()
 const router = useRouter()
 const state = useState(stateid, () => ({
-  id: route.params.id,
+  id: 0,
   q: "",
   a: "",
   tags: "",
@@ -47,13 +47,14 @@ const refLoadingState = ref(false)
 // const model = ref({ id: route.params.id, q: "123", a: "", tags: "", note: "" })
 // vue中直接调用async函数会导致ref无法显示，解决方法是将其放在setup函数中，然后在mounted钩子中调用
 const setup = async () => {
-  if (state.value.id !== "new") {
-    const response = await $fetch(`/api/get/${state.value.id}`)
+  if (route.params.id !== "new") {
+    const response = await $fetch(`/api/get/${route.params.id}`)
     if (response.ok) {
       console.log(response.data)
       // 这里可以直接将response.data赋值给state.value，
       // 但为谨慎起见逐个赋值
       // state.value = response.data
+      state.value.id = response.data.id
       state.value.q = response.data.q
       state.value.a = response.data.a
       state.value.tags = response.data.tags

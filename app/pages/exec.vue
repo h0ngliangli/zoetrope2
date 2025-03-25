@@ -27,10 +27,16 @@
     </div>
 
     <div>
-      <UButton :loading="refLoading" @click="onNext">
+      <UButton class="m-2" :loading="refLoading" @click="onNext">
         下一题
         <UKbd>enter</UKbd>
       </UButton>
+
+      <UButton class="m-2" trailing-icon="i-lucide-arrow-right" @click="onEdit">
+        编辑 {{ state.id }}
+        <UKbd>E</UKbd>
+      </UButton>
+
     </div>
     <div>
       <UCollapsible v-model:open="refShowNote">
@@ -61,6 +67,7 @@
 </template>
 
 <script setup>
+const router = useRouter()
 const stateid = "exec"
 const state = useState(stateid, () => ({
   id: 0,
@@ -138,6 +145,13 @@ const onFocus = () => {
   }
 }
 
+const onEdit = () => {
+  if (state.value.id === 0) {
+    return
+  }
+  router.push(`/edit-${state.value.id}`)
+}
+
 defineShortcuts({
   enter: onNext,
   a: () => {
@@ -151,6 +165,9 @@ defineShortcuts({
   d: () => {
     refShowDebug.value = !refShowDebug.value
   },
+  e:() => {
+    onEdit()
+  }
 })
 
 onMounted(() => {
