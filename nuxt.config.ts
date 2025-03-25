@@ -1,5 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      link: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
+    },
+  },
   devtools: { enabled: true },
 
   modules: ["@nuxt/ui", "@nuxt/eslint", "@nuxt/content"],
@@ -18,8 +23,8 @@ export default defineNuxtConfig({
   },
   routeRules: {
     // /add -> /edit-new
-    "/add": {redirect: "/edit-new"},
-    "/": {redirect: "/exec"},
+    "/add": { redirect: "/edit-new" },
+    "/": { redirect: "/exec" },
   },
 
   ssr: false,
