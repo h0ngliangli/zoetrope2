@@ -17,7 +17,7 @@
           @keydown.esc="onBlur"
         />
         <template v-if="refResult === false" #error>
-          <div>答案: {{ a }}</div>
+          <UTextarea v-model="a" class="w-full" readonly autoresize/>
         </template>
         <template v-if="refResult === true" #help>
           <span>答对了</span>
