@@ -49,9 +49,13 @@
     </div>
 
     <div>
-      <div>debug info</div>
-      <div>state = {{ state }}</div>
-      <div>answer = {{ a }}</div>
+      <UCollapsible v-model:open="refShowDebug">
+        <div>debug info<UKbd>D</UKbd></div>
+        <template #content>
+          <div>state = {{ state }}</div>
+          <div>answer = {{ a }}</div>
+        </template>
+      </UCollapsible>
     </div>
   </div>
 </template>
@@ -69,6 +73,7 @@ const refA = useTemplateRef("refA")
 const refResult = ref(null)
 const refLoading = ref(false)
 const refShowNote = ref(false)
+const refShowDebug = ref(false)
 const a = ref("")
 //
 const onNext = async () => {
@@ -142,6 +147,9 @@ defineShortcuts({
   },
   n: () => {
     refShowNote.value = !refShowNote.value
+  },
+  d: () => {
+    refShowDebug.value = !refShowDebug.value
   },
 })
 
