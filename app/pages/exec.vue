@@ -17,7 +17,8 @@
           @keydown.esc="onBlur"
         />
         <template v-if="refResult === false" #error>
-          <UTextarea v-model="a" class="w-full" readonly autoresize/>
+          正确答案
+          <UTextarea v-model="a" class="w-full" readonly autoresize />
         </template>
         <template v-if="refResult === true" #help>
           <span>答对了</span>
@@ -36,7 +37,13 @@
         <div>附注: <UKbd>N</UKbd></div>
         <template #content>
           <div v-if="!state.note">(空)</div>
-          <UTextarea v-else v-model="state.note" class="w-full" autoresize />
+          <UTextarea
+            v-else
+            v-model="state.note"
+            class="w-full"
+            readonly
+            autoresize
+          />
         </template>
       </UCollapsible>
     </div>
