@@ -106,16 +106,17 @@ watch(
   }
 )
 
+onMounted(setup)
 // shortcuts
-defineShortcuts({
+const _ = defineShortcuts({
   s: onSave,
-  n: onNew,
+  shift_n: onNew,
   escape: () => {
     console.log("escape")
     // 取消当前元素的焦点
     document.activeElement.blur()
   },
 })
+console.log("shortcuts", _)
 
-onMounted(setup)
 </script>

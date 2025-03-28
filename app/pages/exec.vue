@@ -162,32 +162,37 @@ const onEdit = () => {
   router.push(`/edit-${state.value.id}`)
 }
 
-defineShortcuts({
-  enter: () => {
-    onNext({ reload: false })
-  },
-  a: () => {
-    // TODO 这里为何不能调用onFocus？
-    console.log("focus")
-    refA.value.textareaRef.focus()
-  },
-  n: () => {
-    refShowNote.value = !refShowNote.value
-  },
-  d: () => {
-    refShowDebug.value = !refShowDebug.value
-  },
-  e: () => {
-    onEdit()
-  },
-})
-
 const init = async () => {
+  // 使用shikijs作为markdown的代码高亮
   md.use(
     await shiki({
       theme: "vitesse-dark",
     })
   )
+  // 监听键盘事件
+  // TODO: 这里的事件监听有点问题
+  // 它在production模式下没有生效, 原因可能是没有被编译到js中
+  // 这里暂时通过执行输出的结果让编译器认为它被使用了
+  const _ = defineShortcuts({
+    enter: () => {
+      onNext({ reload: false })
+    },
+    a: () => {
+      // TODO 这里为何不能调用onFocus？
+      console.log("focus")
+      refA.value.textareaRef.focus()
+    },
+    n: () => {
+      refShowNote.value = !refShowNote.value
+    },
+    d: () => {
+      refShowDebug.value = !refShowDebug.value
+    },
+    e: () => {
+      onEdit()
+    },
+  })
+  console.log("defined shortcuts", _)
 }
 
 onMounted(async () => {
