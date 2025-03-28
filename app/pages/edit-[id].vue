@@ -5,12 +5,15 @@
       <UButton
         ref="refBtnSave"
         :loading="refLoadingState"
-        label="保存(s)"
         color="secondary"
         class="mr-4"
         @click="onSave"
-      />
-      <UButton label="新建(n)" @click="onNew" />
+      >
+        保存<UKbd>S</UKbd>
+      </UButton>
+      <UButton @click="onNew">
+        新建<UKbd>Shift</UKbd> + <UKbd>N</UKbd>
+      </UButton>
     </div>
 
     <!-- Debug Info -->
@@ -107,7 +110,7 @@ watch(
 )
 
 onMounted(setup)
-// shortcuts
+// workaround 确保defineShotcuts在production模式下不被优化掉
 const _ = defineShortcuts({
   s: onSave,
   shift_n: onNew,
@@ -118,5 +121,4 @@ const _ = defineShortcuts({
   },
 })
 console.log("shortcuts", _)
-
 </script>
