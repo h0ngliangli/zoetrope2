@@ -13,12 +13,13 @@
           v-model="state.a"
           class="w-full"
           autofocus
+          autoresize
           @keydown="onCheckA"
           @keydown.esc="onBlur"
         />
         <template v-if="refResult === false" #error>
           正确答案
-          <UTextarea v-model="a" class="w-full" readonly autoresize />
+          <UTextarea v-model="state.realA" class="w-full" readonly autoresize />
         </template>
         <template v-if="refResult === true" #help>
           <span class="text-(--ui-success)">答对啦!</span>
