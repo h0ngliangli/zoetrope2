@@ -21,7 +21,7 @@
           <UTextarea v-model="a" class="w-full" readonly autoresize />
         </template>
         <template v-if="refResult === true" #help>
-          <span>答对了</span>
+          <span class="text-(--ui-success)">答对啦!</span>
         </template>
       </UFormField>
     </div>
@@ -42,17 +42,10 @@
       </UButton>
     </div>
     <div>
-      <UCollapsible v-model:open="refShowNote">
-        <div>附注: <UKbd>N</UKbd></div>
+      <div>附注: <UKbd>N</UKbd></div>
+      <UCollapsible v-model:open="refShowNote" :unmount-on-hide="false">
         <template #content>
-          <div v-if="!state.note">(空)</div>
-          <UTextarea
-            v-else
-            v-model="state.note"
-            class="w-full"
-            readonly
-            autoresize
-          />
+          <div ref="refNote" class="md">&nbsp;</div>
         </template>
       </UCollapsible>
     </div>
@@ -69,6 +62,9 @@
 </template>
 
 <script setup>
+import markdownit from "markdown-it"
+import shiki from "@shikijs/markdown-it"
+const md = markdownit()
 const router = useRouter()
 const stateid = "exec"
 const state = useState(stateid, () => ({
@@ -84,6 +80,7 @@ const refResult = ref(null)
 const refLoading = ref(false)
 const refShowNote = ref(false)
 const refShowDebug = ref(false)
+const refNote = ref(null)
 
 //
 const onNext = async ({ reload = false }) => {
@@ -107,7 +104,11 @@ const onNext = async ({ reload = false }) => {
     state.value.tags = response.data.tags
     state.value.note = response.data.note
     onFocus()
-    if (!state.value.note) {
+    if (state.value.note) {
+      console.log("refNote", refNote)
+      refNote.value.innerHTML = md.render(state.value.note)
+    } else {
+      refNote.value.innerHTML = "(空)"
       refShowNote.value = true
     }
   } else {
@@ -181,7 +182,34 @@ defineShortcuts({
   },
 })
 
-onMounted(() => {
+const init = async () => {
+  md.use(
+    await shiki({
+      theme: "vitesse-dark",
+    })
+  )
+}
+
+onMounted(async () => {
+  await init()
   onNext({ reload: true })
 })
 </script>
+
+<style scoped>
+.md {
+  font-size: 1rem;
+  line-height: 2rem;
+}
+.md :deep(h1),
+.md :deep(h2),
+.md :deep(h3) {
+  font-size: 1.2rem;
+  margin: 1rem 0;
+}
+
+.md :deep(:not(pre) > code) {
+  color: bisque;
+  background-color: #222;
+}
+</style>

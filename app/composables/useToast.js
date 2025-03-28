@@ -13,7 +13,7 @@ const _show = (color, icon, text) => {
 export const showInfoToast = (text) =>
   _show("info", "i-material-symbols-info-outline", text)
 export const showSuccessToast = (text) =>
-  _show("success", "i-material-symbols-check-rounded", text)
+  _show("w", "i-material-symbols-check-rounded", text)
 export const showErrorToast = (text) =>
   _show("error", "i-mingcute-terror-line", text)
 export const showWarningToast = (text) =>
