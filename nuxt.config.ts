@@ -2,6 +2,12 @@
 export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: true },
+  vite: {
+    build: {
+      // esnext可以让生成的代码保留最新的特性, 不会通过Babel转义成es5.
+      target: "esnext",
+    }
+  },
   // nuxtjs/mdc的位置必须出现在@nuxt/content之前,否则会出现:
   //  WARN  [Vue Router warn]: No match found for location with path "/api/_mdc/highlight"
   // 导致mdc的highlight功能无法使用.
