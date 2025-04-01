@@ -1,42 +1,30 @@
+<!-- 
+  这个组件是一个基于 Monaco Editor 的文本编辑器，支持多种编程语言的语法高亮和自动补全功能。
+  用法:
+  <MonacoTextArea
+    v-model="yourModel"
+    minrows="3"
+    maxrows="10"
+    fontsize="16"
+    language="javascript"
+  />
+-->
 <template>
   <div>
-    <!-- 语言选择元素 -->
-    <UDropdownMenu
-      :items="[
-        {
-          label: 'HTML',
-          onSelect: () => onSelectLanguage('html'),
-        },
-        {
-          label: 'JavaScript',
-          onSelect: () => onSelectLanguage('javascript'),
-        },
-        {
-          label: 'JSON',
-          onSelect: () => onSelectLanguage('json'),
-        },
-        {
-          label: 'Markdown',
-          onSelect: () => onSelectLanguage('markdown'),
-        },
-        {
-          label: 'Shell',
-          onSelect: () => onSelectLanguage('shell'),
-        },
-      ]"
-    >
+    <!-- 语言下拉框 -->
+    <UDropdownMenu :items="initLanguageItems()">
       <UButton
-        :label="thisLanguageButtonLabel"
+        :label="refLanguage"
         icon="i-lucide-menu"
         color="neutral"
         variant="outline"
       />
     </UDropdownMenu>
 
-    <!-- editor container -->
-    <div ref="thisEditorElement" class="border" />
+    <!-- 编辑器容器 -->
+    <div ref="refEditorContainer" />
     <!-- debug info -->
-    <DebugInfo v-model="thisDebugInfo" />
+    <!-- <DebugInfo v-model="thisDebugInfo" /> -->
   </div>
 </template>
 
@@ -47,93 +35,164 @@ const props = defineProps({
     type: Number,
     default: 3,
   },
-  /* 最大显示行数, null不设限制 */
+  /* 最大显示行数, 当控件高度达到最大行数之后就不再增长. null不设限制 */
   maxrows: {
     type: [Number, null],
     default: null,
   },
-  fontsize: {
+  /* 编辑器字体大小(px) */
+  fontSize: {
     type: Number,
     default: 16,
   },
+  /* 预设语言 */
   language: {
     type: String,
     default: "markdown",
   },
 })
+
 // variables
-const globalMonaco = useMonaco()
-const thisLanguage = ref(props.language)
-const thisEditorElement = ref(null)
-let thisEditorInstance = null
-const thisDebugInfo = ref(null)
-const thisLanguageButtonLabel = computed(() => {
-  return `语言 ${thisLanguage.value}`
+
+// model存储编辑器文本
+// eslint-disable-next-line vue/require-prop-types
+const model = defineModel({
+  default: "",
 })
-const thisPropMinrows = computed(() => {
+// monaco库入口
+const monaco = useMonaco()
+// 变量指向monaco.editor.create()的返回对象
+let monacoEditor = null
+// ref变量保留用于选择的语言
+const refLanguage = ref(props.language)
+// ref变量指向编辑器容器
+const refEditorContainer = ref(null)
+// 计算属性: 最小行数
+const compMinrows = computed(() => {
   if (props.minrows < 1) {
     return 1
   }
   return props.minrows
 })
-const lineHeight = props.fontsize * 1.5
+// 计算属性: 最大行数
+const compMaxrows = computed(() => {
+  if (props.maxrows == null) {
+    return Infinity
+  }
+  return Math.max(compMinrows.value, props.maxrows)
+})
+// 常数: 行高
+const lineHeight = props.fontSize * 1.5
+// ref变量: 调试信息
+const thisDebugInfo = ref(null)
 
-// events
-const onSelectLanguage = (newLanguage) => {
-  if (thisLanguage.value === newLanguage) {
+// functions
+// 语言列表
+const initLanguageItems = () => {
+  const languages = [
+    "html",
+    "javascript",
+    "json",
+    "markdown",
+    "plaintext",
+    "python",
+    "sql",
+    "typescript",
+    "css",
+    "csharp",
+    "java",
+    "shell",
+  ]
+  return languages.map((language) => ({
+    label: language,
+    onSelect: () => setLanguage(language),
+  }))
+}
+// 设置语言
+const setLanguage = (newLanguage) => {
+  if (refLanguage.value === newLanguage) {
     return
   }
-  thisLanguage.value = newLanguage
-  if (thisEditorInstance && thisEditorInstance.getModel()) {
-    globalMonaco.editor.setModelLanguage(
-      thisEditorInstance.getModel(),
-      thisLanguage.value
-    )
+  refLanguage.value = newLanguage
+  if (monacoEditor && monacoEditor.getModel()) {
+    monaco.editor.setModelLanguage(monacoEditor.getModel(), newLanguage)
   }
 }
 
+// 根据内容调整editor高度
+const autoAjustEditorHeight = (event) => {
+  if (!monacoEditor) {
+    return
+  }
+  if (event && !event.contentHeightChanged) {
+    // 如果内容高度没有变化，则不调整高度
+    return
+  }
+  const contentHeight = event
+    ? event.contentHeight
+    : monacoEditor.getContentHeight()
+  // 通过下面语句获得lineHeight
+  // const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight)
+  const minHeight = compMinrows.value * lineHeight
+  const maxHeight = compMaxrows.value * lineHeight
+  const finalHeight = Math.min(Math.max(contentHeight, minHeight), maxHeight)
+  refEditorContainer.value.style.height = `${finalHeight}px`
+  thisDebugInfo.value = {
+    contentHeight,
+    minHeight,
+    maxHeight,
+    finalHeight,
+  }
+  monacoEditor.layout() // 重新布局
+}
+
+// 案件处理: 当按下esc键时，blur
+const blurOnEsc = (event) => {
+  console.log("event.code", event.code)
+  if (event.code === "Escape") {
+    // monacoEditor.blur()
+    document.activeElement.blur()
+  }
+}
+
+const focus = () => {
+  if (monacoEditor) {
+    monacoEditor.focus()
+  }
+}
+
+defineExpose({
+  focus,
+})
+
 // init
 onMounted(() => {
-  thisEditorInstance = globalMonaco.editor.create(thisEditorElement.value, {
-    bracketPairColorization: {
-      enabled: true,
-    },
-    fontSize: props.fontsize,
-    language: "markdown",
-    lineDecorationsWidth: 0, // 限制行号和内容之间的宽度
-    lineHeight: lineHeight, // 行高
-    lineNumbers: "on", // 显示行号
-    lineNumbersMinChars: 0, // 行号最小宽度
-    minimap: {
-      enabled: false,
-    },
-    renderLineHighlight: "none", // 不高亮当前行
-    scrollBeyondLastLine: false,
-    theme: "vs-dark",
+  monacoEditor = useMonaco_CreateEditor(refEditorContainer.value, {
+    fontSize: props.fontsSize,
+    language: refLanguage.value,
+    lineHeight: lineHeight,
   })
+  // 显示所有支持的语言
+  console.log(
+    "monaco.languages.getLanguages()",
+    monaco.languages.getLanguages()
+  )
+  // 事件处理
+  // 设置事件响应函数(根据内容调整editor高度)
+  monacoEditor.onDidContentSizeChange(autoAjustEditorHeight)
+  // 监听editor内容变化 更新model
+  monacoEditor.onDidChangeModelContent(() => {
+    const content = monacoEditor.getValue()
+    model.value = content
+  })
+  // 设置文本
+  monacoEditor.setValue(model.value)
   // 初始化editor高度
-  thisEditorElement.value.style.height = `${props.minrows * lineHeight}px`
-  thisEditorInstance.layout()
+  autoAjustEditorHeight()
+  // focus
+  monacoEditor.focus()
 
-  // 根据内容调整editor高度
-  thisEditorInstance.onDidContentSizeChange(() => {
-    // content height是内容全部的高度px
-    const contentHeight = thisEditorInstance.getContentHeight()
-    // 通过下面语句获得lineHeight
-    // const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight)
-    const minHeight = thisPropMinrows.value * lineHeight
-    const maxHeight =
-      props.maxrows == null ? Infinity : props.maxrows * lineHeight
-    console.log("maxHeight", maxHeight)
-    const finalHeight = Math.min(Math.max(contentHeight, minHeight), maxHeight)
-    thisEditorElement.value.style.height = `${finalHeight}px`
-    thisDebugInfo.value = {
-      contentHeight,
-      minHeight,
-      maxHeight,
-      finalHeight,
-    }
-    thisEditorInstance.layout() // 重新布局
-  })
+  // 监听Keyboard事件
+  monacoEditor.onKeyDown(blurOnEsc)
 })
 </script>

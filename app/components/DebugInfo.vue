@@ -4,23 +4,48 @@
 <template>
   <div v-if="utilIsDev()" class="debug-info">
     debug info
-    <div ref="thisDebugInfoElement"></div>
+    <div ref="containerDebugInfo" />
   </div>
 </template>
 
 <script setup>
-import { shikiCodeToHtml } from "~/composables/useShiki"
-const thisDebugInfoElement = ref(null)
+import { useShiki_CodeToHtml } from "~/composables/useShiki"
+
+// vars
+const containerDebugInfo = ref(null)
+// eslint-disable-next-line vue/require-prop-types
 const model = defineModel()
-watch(model, async () => {
-  const html = await shikiCodeToHtml(JSON.stringify(model.value), "json")
-  thisDebugInfoElement.value.innerHTML = html
+
+// methods
+// 当model变化时，调用此函数更新调试信息
+const updateDebugInfoHtml = async () => {
+  if (containerDebugInfo.value) {
+    const html = await useShiki_CodeToHtml(
+      JSON.stringify(model.value, null, 2),
+      "json"
+    )
+    containerDebugInfo.value.innerHTML = html
+  }
+}
+
+watchEffect(async () => {
+  console.log("watchEffect", model.value)
+  await updateDebugInfoHtml()
+})
+
+// 这种方式不会触发. 使用watchEffect
+// watch(model, async () => {
+//   console.log("watch model", model.value)
+//   await updateDebugInfo()
+// })
+
+onMounted(async () => {
+  await updateDebugInfoHtml()
 })
 </script>
 
 <style scoped>
 .debug-info {
-  background-color: #f0f0f0;
   padding: 10px;
   border-radius: 5px;
   margin: 10px 0;

@@ -1,8 +1,17 @@
 <template>
   <div class="p-4 flex flex-col gap-2">
-    <div>提问: {{ state.q }}</div>
-    <div>标签: {{ state.tags }}</div>
+    <div>提问: {{ refModel.q }}</div>
+    <div>标签: {{ refModel.tags }}</div>
     <div>
+      <UFormField>
+        <template #label>
+          答案
+          <UKbd>Ctrl</UKbd>+<UKbd>Enter</UKbd>
+        </template>
+        <MonacoTextArea ref="refEditor" v-model="refModel.userA" />
+      </UFormField>
+    </div>
+    <!-- <div>
       <UFormField>
         <template #label>
           答案
@@ -10,35 +19,36 @@
         </template>
         <UTextarea
           ref="refA"
-          v-model="state.a"
+          v-model="refModel.a"
           class="w-full"
           autofocus
           autoresize
           @keydown="onCheckA"
           @keydown.esc="onBlur"
         />
+        <MonacoTextarea v-model="refModel.a" ref="refA" class="w-full"/>
         <template v-if="refResult === false" #error>
           正确答案
-          <UTextarea v-model="state.realA" class="w-full" readonly autoresize />
+          <UTextarea v-model="refModel.userA" class="w-full" readonly autoresize />
         </template>
         <template v-if="refResult === true" #help>
           <span class="text-(--ui-success)">答对啦!</span>
         </template>
       </UFormField>
-    </div>
+    </div> -->
 
     <div>
       <UButton
         class="m-2"
         :loading="refLoading"
-        @click="onNext({ reload: false })"
+        @click="loadFlashcard({ reload: false })"
       >
         下一题
         <UKbd>enter</UKbd>
       </UButton>
 
       <UButton class="m-2" trailing-icon="i-lucide-arrow-right" @click="onEdit">
-        编辑 {{ state.id }}
+        编辑 {{ refModel.id }}
         <UKbd>E</UKbd>
       </UButton>
     </div>
@@ -51,63 +61,68 @@
       </UCollapsible>
     </div>
 
-    <div>
+    <DebugInfo v-model="refModel" />
+    <!-- <div>
       <UCollapsible v-model:open="refShowDebug">
         <div>debug info<UKbd>D</UKbd></div>
         <template #content>
           <div>state = {{ state }}</div>
         </template>
       </UCollapsible>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup>
 import markdownit from "markdown-it"
 import shiki from "@shikijs/markdown-it"
+
+// vars
 const md = markdownit()
 const router = useRouter()
-const stateid = "exec"
-const state = useState(stateid, () => ({
+const refModel = reactive({
   id: 0,
   q: "",
   a: "",
-  realA: "",
+  userA: "",
   tags: "",
   note: "",
-}))
+})
+const refTest = ref("test")
 const refA = useTemplateRef("refA")
 const refResult = ref(null)
 const refLoading = ref(false)
 const refShowNote = ref(false)
 const refShowDebug = ref(false)
 const refNote = ref(null)
+const refEditor = useTemplateRef("refEditor")
 
 //
-const onNext = async ({ reload = false }) => {
+const loadFlashcard = async ({ reload = false }) => {
   refLoading.value = true
   refShowNote.value = false
   refResult.value = null
   let response = null
-  if (reload && state.value.id !== 0) {
-    console.log("reloading ", state.value.id)
-    response = await $fetch(`/api/get/${state.value.id}`)
+  if (reload && refModel.id !== 0) {
+    console.log("reloading ", refModel.id)
+    response = await $fetch(`/api/get/${refModel.id}`)
   } else {
-    console.log("getting random")
+    console.log("getting a new random question")
     response = await $fetch("/api/get/random")
   }
   if (response.ok) {
     console.log(response.data)
-    state.value.id = response.data.id
-    state.value.q = response.data.q
-    state.value.a = ""
-    state.value.realA = response.data.a
-    state.value.tags = response.data.tags
-    state.value.note = response.data.note
+    refModel.id = response.data.id
+    refModel.q = response.data.q
+    refModel.a = ""
+    refModel.userA = response.data.a
+    refModel.tags = response.data.tags
+    refModel.note = response.data.note
+    refTest.value = refModel
     onFocus()
-    if (state.value.note) {
+    if (refModel.note) {
       console.log("refNote", refNote)
-      refNote.value.innerHTML = md.render(state.value.note)
+      refNote.value.innerHTML = md.render(refModel.note)
     } else {
       refNote.value.innerHTML = "(空)"
       refShowNote.value = true
@@ -125,7 +140,7 @@ const onCheckA = async (event) => {
     console.log("ctrl + enter pressed")
     // effect of checking answer
     await playCheckEffect()
-    if (state.value.realA === state.value.a) {
+    if (refModel.userA === refModel.a) {
       console.log("correct")
       refResult.value = true
     } else {
@@ -157,10 +172,10 @@ const onFocus = () => {
 }
 
 const onEdit = () => {
-  if (state.value.id === 0) {
+  if (refModel.id === 0) {
     return
   }
-  router.push(`/edit-${state.value.id}`)
+  router.push(`/edit-${refModel.id}`)
 }
 
 const init = async () => {
@@ -176,12 +191,10 @@ const init = async () => {
   // 这里暂时通过执行输出的结果让编译器认为它被使用了
   const _ = defineShortcuts({
     enter: () => {
-      onNext({ reload: false })
+      loadFlashcard({ reload: false })
     },
     a: () => {
-      // TODO 这里为何不能调用onFocus？
-      console.log("focus")
-      refA.value.textareaRef.focus()
+      refEditor.value.focus()
     },
     n: () => {
       refShowNote.value = !refShowNote.value
@@ -198,7 +211,7 @@ const init = async () => {
 
 onMounted(async () => {
   await init()
-  onNext({ reload: true })
+  loadFlashcard({ reload: true })
 })
 </script>
 
