@@ -50,7 +50,10 @@ const refLoadingState = ref(false)
 // const model = ref({ id: route.params.id, q: "123", a: "", tags: "", note: "" })
 // vue中直接调用async函数会导致ref无法显示，解决方法是将其放在setup函数中，然后在mounted钩子中调用
 const setup = async () => {
-  if (route.params.id !== "new") {
+  if (
+    route.params.id !== "new" &&
+    Number.isInteger(Number.parseInt(route.params.id))
+  ) {
     const response = await $fetch(`/api/get/${route.params.id}`)
     if (response.ok) {
       console.log(response.data)
@@ -66,6 +69,9 @@ const setup = async () => {
       showErrorToast(`没有找到id为${state.value.id}的卡片，你可以创建一个新的`)
       state.value.id = "new"
     }
+  } else {
+    // 如果是新建卡片，直接赋值
+    state.value.id = "new"
   }
 }
 
@@ -105,7 +111,7 @@ watch(
   () => state.value.id,
   (newId, oldId) => {
     console.log("id changed", oldId, newId)
-    router.replace(`/edit-${newId}`)
+    router.replace(`/edit/${newId}`)
   }
 )
 

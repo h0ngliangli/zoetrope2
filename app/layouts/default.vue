@@ -32,7 +32,7 @@ const onEdit = async () => {
   const id = Number.parseInt(kw)
   if (Number.isInteger(id)) {
     // 直接跳转到编辑页面
-    navigateTo({ path: `/edit-${id}` })
+    navigateTo({ path: `/edit/${id}` })
     return
   }
   // 直接跳转到搜索页面

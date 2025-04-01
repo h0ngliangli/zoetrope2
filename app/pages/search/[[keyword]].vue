@@ -112,7 +112,7 @@ const onSearch = async () => {
 }
 
 const onEdit = (id) => {
-  router.push(`/edit-${id}`)
+  router.push(`/edit/${id}`)
 }
 
 const funcGeneratePagedResult = () => {

@@ -175,7 +175,7 @@ const onEdit = () => {
   if (refModel.id === 0) {
     return
   }
-  router.push(`/edit-${refModel.id}`)
+  router.push(`/edit/${refModel.id}`)
 }
 
 const init = async () => {
