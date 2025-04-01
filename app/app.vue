@@ -1,6 +1,8 @@
 <template>
   <UApp :toaster="appConfig.toaster">
-    <NuxtPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </UApp>
 </template>
 
