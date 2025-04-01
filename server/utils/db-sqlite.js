@@ -75,6 +75,22 @@ export const utilDbGetRandom = async () => {
   return utilDbGet(id)
 }
 
+// 关键字查找
+export const utilDbSearch = async (keyword) => {
+  if (!keyword) {
+    return []
+  }
+  const sqlResult = await db.sql`select * from flashcard where
+    q like ${`%${keyword}%`} or 
+    a like ${`%${keyword}%`} or 
+    tags like ${`%${keyword} %`}`
+  logger.debug("search %s %o", keyword, sqlResult.rows)
+  return sqlResult.rows.map((row) => {
+    row.tags = row.tags.trim()
+    return row
+  })
+}
+
 const _flashcardIdExists = async (id) => {
   logger.debug("checking if flashcard id exists %o", id)
   const sqlResult =
