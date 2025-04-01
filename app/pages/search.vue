@@ -42,9 +42,17 @@
     </div>
     <div id="查询结果">
       <UPagination v-model:page="page" :total="refModel.queryDataLength" />
-      <div id="查询结果grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <UCard v-for="(item, index) in computedPagedResult" :key="index">
-          <template #header>
+      <div
+        id="查询结果grid"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+      >
+        <UCard
+          v-for="(item, index) in computedPagedResult"
+          :key="index"
+          class="cursor-pointer"
+          @click="onEdit(item.id)"
+        >
+          <template #default>
             {{ item.q }}
           </template>
         </UCard>
@@ -57,6 +65,8 @@
 </template>
 
 <script setup>
+const router = useRouter()
+
 const refModel = reactive({
   query: "",
   loading: false,
@@ -88,6 +98,10 @@ const onSearch = async () => {
   } finally {
     refModel.loading = false
   }
+}
+
+const onEdit = (id) => {
+  router.push(`/edit-${id}`)
 }
 
 const funcGeneratePagedResult = () => {
