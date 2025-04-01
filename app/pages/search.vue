@@ -15,20 +15,20 @@
           <UKbd>Enter</UKbd>
         </template>
         <UInput
-          v-model="refModel.query"
+          v-model="state.query"
           class="w-full"
           autofocus
           @keydown.enter="onSearch"
         />
-        <template v-if="refModel.queryStatus === false" #error>
-          <UInput v-model="refModel.query" class="w-full" readonly />
+        <template v-if="state.queryStatus === false" #error>
+          <UInput v-model="state.query" class="w-full" readonly />
           <div class="text-red-500">查询失败</div>
         </template>
-        <template v-if="refModel.queryStatus === true" #help>
+        <template v-if="state.queryStatus === true" #help>
           <span class="text-(--ui-success)">查询成功!</span>
         </template>
       </UFormField>
-      <UButton class="m-2" :loading="refModel.loading" @click="onSearch">
+      <UButton class="m-2" :loading="state.loading" @click="onSearch">
         查询
       </UButton>
       <!-- <UButton
@@ -41,7 +41,11 @@
             </UButton> -->
     </div>
     <div id="查询结果">
-      <UPagination v-model:page="page" :total="refModel.queryDataLength" />
+      <UPagination
+        v-model:page="state.page"
+        :total="state.queryDataLength"
+        :items-per-page="state.pageSize"
+      />
       <div
         id="查询结果grid"
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
@@ -59,22 +63,23 @@
       </div>
     </div>
     <div>
-      <DebugInfo v-model="refModel" />
+      <!-- <DebugInfo v-model="refModel" /> -->
     </div>
   </div>
 </template>
 
 <script setup>
 const router = useRouter()
-
-const refModel = reactive({
+const state = useState(() => ({
   query: "",
   loading: false,
   queryStatus: null, // null, true, false
   queryData: [],
   queryDataLength: 0,
   page: 1,
-})
+  pageSize: 5,
+}))
+const refModel = state.value
 
 const onSearch = async () => {
   if (!refModel.query) {
@@ -87,6 +92,7 @@ const onSearch = async () => {
     if (response.ok) {
       refModel.queryData = response.data
       refModel.queryDataLength = response.data.length
+      console.log("response.queryDateLength", refModel.queryDataLength)
       refModel.queryStatus = true
       refModel.page = 1
     } else {
@@ -105,8 +111,8 @@ const onEdit = (id) => {
 }
 
 const funcGeneratePagedResult = () => {
-  const startIndex = (refModel.page - 1) * 10
-  const endIndex = startIndex + 10
+  const startIndex = (refModel.page - 1) * refModel.pageSize
+  const endIndex = startIndex + refModel.pageSize
   return refModel.queryData.slice(startIndex, endIndex)
 }
 
