@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
       message: "请输入搜索关键字",
     }
   }
+  // eslint-disable-next-line no-undef
   const flashcards = await utilDbSearch(keyword)
   if (flashcards.length === 0) {
     return {

@@ -21,8 +21,7 @@
           @keydown.enter="onSearch"
         />
         <template v-if="state.queryStatus === false" #error>
-          <UInput v-model="state.query" class="w-full" readonly />
-          <div class="text-red-500">查询失败</div>
+          <div class="text-red-500">{{ state.queryMessage }}</div>
         </template>
         <template v-if="state.queryStatus === true" #help>
           <span class="text-(--ui-success)">查询成功!</span>
@@ -69,17 +68,20 @@
 </template>
 
 <script setup>
+const route = useRoute()
 const router = useRouter()
 const state = useState(() => ({
   query: "",
   loading: false,
   queryStatus: null, // null, true, false
+  queryMessage: "",
   queryData: [],
   queryDataLength: 0,
   page: 1,
   pageSize: 10,
 }))
 const refModel = state.value
+const computedPagedResult = computed(() => funcGeneratePagedResult())
 
 const onSearch = async () => {
   if (!refModel.query) {
@@ -87,6 +89,8 @@ const onSearch = async () => {
   }
   refModel.loading = true
   refModel.queryStatus = null
+  refModel.queryMessage = ""
+  refModel.queryData = []
   try {
     const response = await $fetch(`/api/search/${refModel.query}`)
     if (response.ok) {
@@ -97,6 +101,7 @@ const onSearch = async () => {
       refModel.page = 1
     } else {
       refModel.queryStatus = false
+      refModel.queryMessage = response.message
     }
   } catch (error) {
     console.error("Error:", error)
@@ -116,5 +121,10 @@ const funcGeneratePagedResult = () => {
   return refModel.queryData.slice(startIndex, endIndex)
 }
 
-const computedPagedResult = computed(() => funcGeneratePagedResult())
+onMounted(() => {
+  if (route.params.keyword) {
+    refModel.query = route.params.keyword
+    onSearch()
+  }
+})
 </script>
