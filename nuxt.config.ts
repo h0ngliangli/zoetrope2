@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   },
   routeRules: {
     // /add -> /edit-new
-    "/add": { redirect: "/edit-new" },
+    "/add": { redirect: "/edit/new" },
     "/": { redirect: "/exec" },
   },
   mdc: {
