@@ -20,7 +20,7 @@
     />
 
     <!-- 编辑器容器 -->
-    <div ref="refEditorContainer" />
+    <div ref="refEditorContainer" class="monaco" />
     <!-- debug info -->
     <!-- <DebugInfo v-model="thisDebugInfo" /> -->
   </div>
@@ -200,5 +200,19 @@ onMounted(() => {
 
   // 监听Keyboard事件
   monacoEditor.onKeyDown(blurOnEsc)
+  // 监听focus事件
+  monacoEditor.onDidFocusEditorText(() => {
+    //console.log("editor focus")
+  })
+  // 监听blur事件
+  monacoEditor.onDidBlurEditorText(() => {
+    //console.log("editor blur")
+  })
 })
 </script>
+
+<style scoped>
+.monaco:focus-within {
+  @apply ring-2 ring-(--ui-primary) rounded-(--ui-radius);
+}
+</style>
