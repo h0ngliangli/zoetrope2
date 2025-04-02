@@ -148,7 +148,7 @@ const autoAjustEditorHeight = (event) => {
 
 // 案件处理: 当按下esc键时，blur
 const blurOnEsc = (event) => {
-  console.log("event.code", event.code)
+  // console.log("event.code", event.code)
   if (event.code === "Escape") {
     // monacoEditor.blur()
     document.activeElement.blur()
@@ -185,12 +185,16 @@ onMounted(() => {
     const content = monacoEditor.getValue()
     model.value = content
   })
+  // 监听model内容变化 更新editor
+  watch(model, (newValue) => {
+    if (monacoEditor.getValue() !== newValue) {
+      monacoEditor.setValue(newValue)
+    }
+  })
   // 设置文本
   monacoEditor.setValue(model.value)
   // 初始化editor高度
   autoAjustEditorHeight()
-  // focus
-  monacoEditor.focus()
 
   // 监听Keyboard事件
   monacoEditor.onKeyDown(blurOnEsc)

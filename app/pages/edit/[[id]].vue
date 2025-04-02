@@ -1,129 +1,140 @@
 <template>
-  <div class="p-4">
-    <FFlashcard :state="stateid" />
-    <div class="mt-4 ml-4">
-      <UButton
-        ref="refBtnSave"
-        :loading="refLoadingState"
-        color="secondary"
-        class="mr-4"
-        @click="onSave"
-      >
-        保存<UKbd>S</UKbd>
+  <div class="p-4 grid grid-cols-1 gap-4">
+    <UFormField label="提问(q)" class="mb-4">
+      <UInput
+        ref="refInputQ"
+        v-model="refModel.q"
+        placeholder="你的问题是什么?"
+        class="w-full"
+      />
+    </UFormField>
+    <UFormField label="标签(t)" class="mb-4">
+      <UInput
+        ref="refInputTags"
+        v-model="refModel.tags"
+        placeholder="标签1 标签2 ..."
+        class="w-full"
+      />
+    </UFormField>
+    <UFormField label="答案(a)" class="mb-4">
+      <MonacoTextArea ref="refInputA" v-model="refModel.a" />
+    </UFormField>
+    <UFormField label="附注(n)" class="mb-4">
+      <MonacoTextArea ref="refInputNote" v-model="refModel.note" />
+    </UFormField>
+
+    <div class="flex flex-row gap-4">
+      <UButton :loading="refModel.loading" color="secondary" @click="save">
+        保存(shift+s)
       </UButton>
-      <UButton @click="onNew">
-        新建<UKbd>Shift</UKbd> + <UKbd>N</UKbd>
-      </UButton>
+      <UButton @click="newFlashcard"> 新建(shift+n) </UButton>
     </div>
 
     <!-- Debug Info -->
-    <USeparator class="h-8" />
-    <div>
-      <UCard>
-        <template #header>
-          <h1>Debug Info</h1>
-        </template>
-        <div>
-          <div>$route.fullPath = {{ $route.fullPath }}</div>
-          <div>$route.params.id = {{ $route.params.id }}</div>
-          <div>state = {{ state }}</div>
-        </div>
-      </UCard>
-    </div>
+    <DebugInfo v-model="refModel" />
   </div>
 </template>
 
 <script setup>
-const stateid = "edit"
 const route = useRoute()
 const router = useRouter()
-const state = useState(stateid, () => ({
-  id: 0,
+const refModel = reactive({
+  id: "",
   q: "",
   a: "",
+  alang: "plaintext",
   tags: "",
   note: "",
-}))
-const refBtnSave = useTemplateRef("refBtnSave")
-const refLoadingState = ref(false)
+  loading: false,
+})
+const refInputQ = ref(null)
+const refInputTags = ref(null)
+const refInputA = ref(null)
+const refInputNote = ref(null)
 
-// const model = ref({ id: route.params.id, q: "123", a: "", tags: "", note: "" })
-// vue中直接调用async函数会导致ref无法显示，解决方法是将其放在setup函数中，然后在mounted钩子中调用
-const setup = async () => {
-  if (
-    route.params.id !== "new" &&
-    Number.isInteger(Number.parseInt(route.params.id))
-  ) {
-    const response = await $fetch(`/api/get/${route.params.id}`)
-    if (response.ok) {
-      console.log(response.data)
-      // 这里可以直接将response.data赋值给state.value，
-      // 但为谨慎起见逐个赋值
-      // state.value = response.data
-      state.value.id = response.data.id
-      state.value.q = response.data.q
-      state.value.a = response.data.a
-      state.value.tags = response.data.tags
-      state.value.note = response.data.note
-    } else {
-      showErrorToast(`没有找到id为${state.value.id}的卡片，你可以创建一个新的`)
-      state.value.id = "new"
-    }
-  } else {
-    // 如果是新建卡片，直接赋值
-    state.value.id = "new"
-  }
-}
-
-const onSave = async () => {
-  refLoadingState.value = true
+const save = async () => {
+  refModel.loading = true
   const response = await $fetch("/api/save", {
     method: "POST",
-    body: { ...state.value },
+    body: {
+      id: refModel.id,
+      q: refModel.q,
+      a: refModel.a,
+      tags: refModel.tags,
+      note: refModel.note,
+    },
   })
   if (response.ok) {
-    state.value.id = response.data.id
-    showSuccessToast(`卡片 ${state.value.id} 保存成功`)
+    refModel.id = response.data.id
+    showSuccessToast(`卡片 ${refModel.id} 保存成功`)
   } else {
     showErrorToast(response.message)
   }
   // 延期1秒关闭loading状态, 以便用户看到保存成功的提示
   setTimeout(() => {
-    refLoadingState.value = false
+    refModel.loading = false
   }, 1000)
 }
 
-const onNew = () => {
-  state.value.id = "new"
-  state.value.q = ""
-  state.value.a = ""
-  state.value.tags = ""
-  state.value.note = ""
+const newFlashcard = () => {
+  refModel.id = "new"
+  refModel.q = ""
+  refModel.a = ""
+  refModel.tags = ""
+  refModel.note = ""
 }
 
-// watch(state, (newState, oldState) => {
-//   // 修改state.value.q不会触发这个watch
-//   console.log("state changed", newState)
-// })
-
-// 通过函数watch来监听state.value.id的变化
+// 根据refModel.id的变化，自动跳转到url
 watch(
-  () => state.value.id,
+  () => refModel.id,
   (newId, oldId) => {
     console.log("id changed", oldId, newId)
     router.replace(`/edit/${newId}`)
   }
 )
 
-onMounted(setup)
+// vue中无法直接在<script setup>z中调用async函数, 这样会导致ref无法显示，
+// 在mounted钩子中调用
+onMounted(async () => {
+  if (Number.isInteger(Number.parseInt(route.params.id))) {
+    const response = await $fetch(`/api/get/${route.params.id}`)
+    if (response.ok) {
+      console.log(response.data)
+      refModel.id = response.data.id
+      refModel.q = response.data.q
+      refModel.a = response.data.a
+      refModel.tags = response.data.tags
+      refModel.note = response.data.note
+    } else {
+      showErrorToast(`没有找到id为${refModel.id}的卡片，你可以创建一个新的`)
+      refModel.id = "new"
+    }
+  } else {
+    // 如果是新建卡片，直接赋值
+    refModel.id = "new"
+  }
+})
 // workaround 确保defineShotcuts在production模式下不被优化掉
 const _ = defineShortcuts({
-  s: onSave,
-  shift_n: onNew,
-  escape: () => {
-    console.log("escape")
+  q: () => {
+    refInputQ.value.inputRef.focus()
+  },
+  t: () => {
+    refInputTags.value.inputRef.focus()
+  },
+  a: () => {
+    refInputA.value.focus()
+  },
+  n: () => {
+    console.log("n")
+    refInputNote.value.focus()
+  },
+  shift_s: save,
+  shift_n: newFlashcard,
+  escape: {
+    usingInput: true,
     // 取消当前元素的焦点
-    document.activeElement.blur()
+    handler: () => document.activeElement.blur(),
   },
 })
 console.log("shortcuts", _)
