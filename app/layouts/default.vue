@@ -1,8 +1,7 @@
 <template>
   <div class="flex flex-col h-screen">
-    <header class="bg-gray-800 text-white p-1 flex gap-4 pl-4">
-      <!-- <h1 class="text-2xl"></h1> -->
-      <ULink to="/add" as="button">新建</ULink>
+    <header class="bg-gray-800 text-white p-1 flex flex-row items-center gap-4 pl-4">
+      <ULink to="/add">新建</ULink>
       <ULink to="/exec">练习</ULink>
       <UInput
         v-model="refKw"
