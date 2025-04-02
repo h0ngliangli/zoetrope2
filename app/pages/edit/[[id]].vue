@@ -16,10 +16,10 @@
         class="w-full"
       />
     </UFormField>
-    <UFormField label="答案(a)" class="mb-4">
+    <UFormField label="答案(aa)" class="mb-4">
       <MonacoTextArea ref="refInputA" v-model="refModel.a" />
     </UFormField>
-    <UFormField label="附注(n)" class="mb-4">
+    <UFormField label="附注(nn)" class="mb-4">
       <MonacoTextArea ref="refInputNote" v-model="refModel.note" />
     </UFormField>
 
@@ -122,10 +122,10 @@ const _ = defineShortcuts({
   t: () => {
     refInputTags.value.inputRef.focus()
   },
-  a: () => {
+  'a-a': () => {
     refInputA.value.focus()
   },
-  n: () => {
+  'n-n': () => {
     console.log("n")
     refInputNote.value.focus()
   },
