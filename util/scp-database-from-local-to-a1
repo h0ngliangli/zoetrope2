@@ -1,0 +1,12 @@
+#!/bin/sh
+
+read -p "warning! are you sure to copy LOCAL to remote? (type yes) " answer
+if [ "$answer" != "yes" ]; then
+  echo "aborting"
+  exit 1
+fi
+echo "backing up db.sqlite on a1"
+ssh -i ~/.ssh/oracle-cloud-vm-ssh.key ubuntu@oracle-a1 "cp ~/node-apps/zoetrope2/.data/db.sqlite ~/node-apps/zoetrope2/.data/db.sqlite.$(date +%Y-%m-%d_%H-%M-%S)"
+echo "copying db.sqlite from LOCAL to a1."
+scp -i ~/.ssh/oracle-cloud-vm-ssh.key ~/code/zoetrope2/.data/db.sqlite ubuntu@oracle-a1:~/node-apps/zoetrope2/.data/ 
+echo "done"

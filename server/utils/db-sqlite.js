@@ -7,6 +7,7 @@ export const utilDbInit = async () => {
         id integer,
         q text,
         a text,
+        alang text,
         tags text,
         note text,
         img text,
@@ -26,6 +27,7 @@ export const utilDbSave = async ({
   id = 0,
   q = "",
   a = "",
+  alang = "plaintext",
   tags = "",
   note = "",
 }) => {
@@ -43,12 +45,12 @@ export const utilDbSave = async ({
   if (await _flashcardIdExists(id)) {
     console.log("updating flashcard")
     const sqlResult =
-      await db.sql`update flashcard set q = ${q}, a = ${a}, tags = ${tags}, note = ${note} where id = ${id}`
+      await db.sql`update flashcard set q = ${q}, a = ${a}, alang = ${alang}, tags = ${tags}, note = ${note} where id = ${id}`
     logger.info("updating flashcard %o", sqlResult)
     return id
   } else {
     const sqlResult =
-      await db.sql`insert into flashcard (q, a, tags, note) values (${q}, ${a}, ${tags}, ${note})`
+      await db.sql`insert into flashcard (q, a, alang, tags, note) values (${q}, ${a}, ${alang}, ${tags}, ${note})`
     logger.info("inserting flashcard %o", sqlResult)
     _shuffleAdd(ids, sqlResult.lastInsertRowid)
     return sqlResult.lastInsertRowid

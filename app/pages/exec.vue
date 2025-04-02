@@ -8,34 +8,9 @@
           答案
           <UKbd>Ctrl</UKbd>+<UKbd>Enter</UKbd>
         </template>
-        <MonacoTextArea ref="refEditor" v-model="refModel.userA" />
+        <MonacoTextArea ref="refEditor" v-model:text="refModel.userA" v-model:language="refModel.alang"/>
       </UFormField>
     </div>
-    <!-- <div>
-      <UFormField>
-        <template #label>
-          答案
-          <UKbd>Ctrl</UKbd>+<UKbd>Enter</UKbd>
-        </template>
-        <UTextarea
-          ref="refA"
-          v-model="refModel.a"
-          class="w-full"
-          autofocus
-          autoresize
-          @keydown="onCheckA"
-          @keydown.esc="onBlur"
-        />
-        <MonacoTextarea v-model="refModel.a" ref="refA" class="w-full"/>
-        <template v-if="refResult === false" #error>
-          正确答案
-          <UTextarea v-model="refModel.userA" class="w-full" readonly autoresize />
-        </template>
-        <template v-if="refResult === true" #help>
-          <span class="text-(--ui-success)">答对啦!</span>
-        </template>
-      </UFormField>
-    </div> -->
 
     <div>
       <UButton
@@ -61,15 +36,7 @@
       </UCollapsible>
     </div>
 
-    <DebugInfo v-model="refModel" />
-    <!-- <div>
-      <UCollapsible v-model:open="refShowDebug">
-        <div>debug info<UKbd>D</UKbd></div>
-        <template #content>
-          <div>state = {{ state }}</div>
-        </template>
-      </UCollapsible>
-    </div> -->
+    <!-- <DebugInfo v-model="refModel" /> -->
   </div>
 </template>
 
@@ -84,6 +51,7 @@ const refModel = reactive({
   id: 0,
   q: "",
   a: "",
+  alang: "plaintext",
   userA: "",
   tags: "",
   note: "",
@@ -115,6 +83,7 @@ const loadFlashcard = async ({ reload = false }) => {
     refModel.id = response.data.id
     refModel.q = response.data.q
     refModel.a = ""
+    refModel.alang = response.data.alang || "plaintext"
     refModel.userA = response.data.a
     refModel.tags = response.data.tags
     refModel.note = response.data.note

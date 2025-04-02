@@ -4,7 +4,14 @@ import { utilDbSave } from "../utils/db-sqlite"
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   logger.debug("body %o", body)
-  let { id = "", q = "", a = "", tags = "", note = "" } = body
+  let {
+    id = "",
+    q = "",
+    a = "",
+    alang = "plaintext",
+    tags = "",
+    note = "",
+  } = body
   if (!q || !a) {
     return {
       ok: false,
@@ -13,7 +20,7 @@ export default defineEventHandler(async (event) => {
     }
   }
   try {
-    id = await utilDbSave({ id, q, a, tags, note })
+    id = await utilDbSave({ id, q, a, alang, tags, note })
     return {
       ok: true,
       statusCode: 200,

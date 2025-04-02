@@ -11,15 +11,13 @@
 -->
 <template>
   <div>
-    <!-- 语言下拉框 -->
-    <UDropdownMenu :items="initLanguageItems()">
-      <UButton
-        :label="refLanguage"
-        icon="i-lucide-menu"
-        color="neutral"
-        variant="outline"
-      />
-    </UDropdownMenu>
+    <USelectMenu
+      v-model="modelLanguage"
+      value-key="label"
+      :items="initLanguageItems()"
+      placeholder="语言"
+      class="w-36 m-1"
+    />
 
     <!-- 编辑器容器 -->
     <div ref="refEditorContainer" />
@@ -45,10 +43,10 @@ const props = defineProps({
     type: Number,
     default: 16,
   },
-  /* 预设语言 */
+  /* 编辑器语言 */
   language: {
     type: String,
-    default: "markdown",
+    default: "plaintext",
   },
 })
 
@@ -56,15 +54,17 @@ const props = defineProps({
 
 // model存储编辑器文本
 // eslint-disable-next-line vue/require-prop-types
-const model = defineModel({
+const modelText = defineModel("text", {
   default: "",
+})
+// eslint-disable-next-line vue/require-prop-types
+const modelLanguage = defineModel("language", {
+  default: "plaintext",
 })
 // monaco库入口
 const monaco = useMonaco()
 // 变量指向monaco.editor.create()的返回对象
 let monacoEditor = null
-// ref变量保留用于选择的语言
-const refLanguage = ref(props.language)
 // ref变量指向编辑器容器
 const refEditorContainer = ref(null)
 // 计算属性: 最小行数
@@ -90,33 +90,24 @@ const thisDebugInfo = ref(null)
 // 语言列表
 const initLanguageItems = () => {
   const languages = [
-    "html",
-    "javascript",
-    "json",
-    "markdown",
-    "plaintext",
-    "python",
-    "sql",
-    "typescript",
-    "css",
-    "csharp",
-    "java",
-    "shell",
+    ...[
+      "html",
+      "javascript",
+      "json",
+      "markdown",
+      "plaintext",
+      "python",
+      "sql",
+      "typescript",
+      "css",
+      "csharp",
+      "java",
+      "shell",
+    ].sort(),
   ]
   return languages.map((language) => ({
     label: language,
-    onSelect: () => setLanguage(language),
   }))
-}
-// 设置语言
-const setLanguage = (newLanguage) => {
-  if (refLanguage.value === newLanguage) {
-    return
-  }
-  refLanguage.value = newLanguage
-  if (monacoEditor && monacoEditor.getModel()) {
-    monaco.editor.setModelLanguage(monacoEditor.getModel(), newLanguage)
-  }
 }
 
 // 根据内容调整editor高度
@@ -167,9 +158,13 @@ defineExpose({
 
 // init
 onMounted(() => {
+  // 设置语言
+  if (modelLanguage.value === "") {
+    modelLanguage.value = props.language
+  }
   monacoEditor = useMonaco_CreateEditor(refEditorContainer.value, {
     fontSize: props.fontsSize,
-    language: refLanguage.value,
+    language: modelLanguage.value,
     lineHeight: lineHeight,
   })
   // 显示所有支持的语言
@@ -183,16 +178,23 @@ onMounted(() => {
   // 监听editor内容变化 更新model
   monacoEditor.onDidChangeModelContent(() => {
     const content = monacoEditor.getValue()
-    model.value = content
+    modelText.value = content
   })
   // 监听model内容变化 更新editor
-  watch(model, (newValue) => {
+  watch(modelText, (newValue) => {
     if (monacoEditor.getValue() !== newValue) {
       monacoEditor.setValue(newValue)
     }
   })
+  watch(modelLanguage, (newValue) => {
+    console.log("modelLanguage", newValue)
+    if (monacoEditor.getModel()) {
+      monaco.editor.setModelLanguage(monacoEditor.getModel(), newValue)
+    }
+  })
+
   // 设置文本
-  monacoEditor.setValue(model.value)
+  monacoEditor.setValue(modelText.value)
   // 初始化editor高度
   autoAjustEditorHeight()
 

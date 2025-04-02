@@ -17,10 +17,18 @@
       />
     </UFormField>
     <UFormField label="答案(aa)" class="mb-4">
-      <MonacoTextArea ref="refInputA" v-model="refModel.a" />
+      <MonacoTextArea
+        ref="refInputA"
+        v-model:text="refModel.a"
+        v-model:language="refModel.alang"
+      />
     </UFormField>
     <UFormField label="附注(nn)" class="mb-4">
-      <MonacoTextArea ref="refInputNote" v-model="refModel.note" />
+      <MonacoTextArea
+        ref="refInputNote"
+        v-model:text="refModel.note"
+        language="markdown"
+      />
     </UFormField>
 
     <div class="flex flex-row gap-4">
@@ -31,7 +39,7 @@
     </div>
 
     <!-- Debug Info -->
-    <DebugInfo v-model="refModel" />
+    <!-- <DebugInfo v-model="refModel" /> -->
   </div>
 </template>
 
@@ -60,6 +68,7 @@ const save = async () => {
       id: refModel.id,
       q: refModel.q,
       a: refModel.a,
+      alang: refModel.alang,
       tags: refModel.tags,
       note: refModel.note,
     },
@@ -80,6 +89,7 @@ const newFlashcard = () => {
   refModel.id = "new"
   refModel.q = ""
   refModel.a = ""
+  refModel.alang = "plaintext"
   refModel.tags = ""
   refModel.note = ""
 }
@@ -103,6 +113,7 @@ onMounted(async () => {
       refModel.id = response.data.id
       refModel.q = response.data.q
       refModel.a = response.data.a
+      refModel.alang = response.data.alang || "plaintext"
       refModel.tags = response.data.tags
       refModel.note = response.data.note
     } else {
@@ -122,10 +133,10 @@ const _ = defineShortcuts({
   t: () => {
     refInputTags.value.inputRef.focus()
   },
-  'a-a': () => {
+  "a-a": () => {
     refInputA.value.focus()
   },
-  'n-n': () => {
+  "n-n": () => {
     console.log("n")
     refInputNote.value.focus()
   },
