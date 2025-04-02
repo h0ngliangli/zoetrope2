@@ -21,6 +21,7 @@
         ref="refInputA"
         v-model:text="refModel.a"
         v-model:language="refModel.alang"
+        maxrows="5"
       />
     </UFormField>
     <UFormField label="附注(nn)" class="mb-4">
@@ -28,6 +29,7 @@
         ref="refInputNote"
         v-model:text="refModel.note"
         language="markdown"
+        maxrows="15"
       />
     </UFormField>
 
