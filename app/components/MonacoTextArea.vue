@@ -35,12 +35,12 @@ const props = defineProps({
   },
   /* 最大显示行数, 当控件高度达到最大行数之后就不再增长. null不设限制 */
   maxrows: {
-    type: [Number, null],
+    type: [Number, String, null],
     default: null,
   },
   /* 编辑器字体大小(px) */
   fontSize: {
-    type: Number,
+    type: [Number, String],
     default: 16,
   },
   /* 编辑器语言 */
@@ -146,6 +146,7 @@ const blurOnEsc = (event) => {
   }
 }
 
+// 将用户输入的焦点设置在当前编辑器上
 const focus = () => {
   if (monacoEditor) {
     monacoEditor.focus()
@@ -208,6 +209,16 @@ onMounted(() => {
   monacoEditor.onDidBlurEditorText(() => {
     //console.log("editor blur")
   })
+
+  // 通过ResizeObserver监听编辑器容器大小变化
+  const observer = new ResizeObserver((_) => {
+    if (!monacoEditor) {
+      return
+    }
+    console.log("editor container resize")
+    monacoEditor.layout()
+  })
+  observer.observe(refEditorContainer.value)
 })
 </script>
 

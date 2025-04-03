@@ -30,25 +30,23 @@
       </UButton>
       <UButton @click="newFlashcard"> 新建(shift+n) </UButton>
     </div>
-    <UFormField label="附注(nn)" class="mb-4">
-      <div v-if="refModel.showNotePreview" class="mb-2">
-        <UButton
-          @click="refModel.showNotePreview = false"
-          color="secondary"
-          size="small"
-        >
-          关闭预览
-        </UButton>
-        <MarkdownPreview :content="refModel.note" />
-      </div>
+    <UFormField label="附注(nn), 预览(yy)" class="mb-4">
       <MonacoTextArea
-        v-show="!refModel.showNotePreview"
         ref="refInputNote"
         v-model:text="refModel.note"
         language="markdown"
         maxrows="15"
       />
     </UFormField>
+
+    <!--预览窗口 -->
+    <UModal v-model:open="refModel.showNotePreview" >
+      <template #content>
+        <div class="p-4 overflow-auto">
+          <MarkdownPreview v-model="refModel.note" />
+        </div>
+      </template>
+    </UModal>
 
     <!-- Debug Info -->
     <!-- <DebugInfo v-model="refModel" /> -->
@@ -153,12 +151,23 @@ const _ = defineShortcuts({
     console.log("n")
     refInputNote.value.focus()
   },
+  "y-y": () => {
+    refModel.showNotePreview = !refModel.showNotePreview
+  },
   shift_s: save,
   shift_n: newFlashcard,
   escape: {
     usingInput: true,
     // 取消当前元素的焦点
-    handler: () => document.activeElement.blur(),
+    handler: () => {
+      // 如果当前显示的是note预览，则关闭预览
+      if (refModel.showNotePreview) {
+        refModel.showNotePreview = false
+        return
+      }
+      // 否则取消当前元素的焦点
+      document.activeElement.blur()
+    },
   },
 })
 console.log("shortcuts", _)
