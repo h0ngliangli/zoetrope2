@@ -21,3 +21,20 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+.markdown {
+  font-size: 1rem;
+  line-height: 2rem;
+  color: rgb(171, 171, 171);
+}
+.markdown :deep(h1),
+.markdown :deep(h2),
+.markdown :deep(h3) {
+  font-size: 1.2rem;
+  margin: 1rem 0;
+}
+
+.markdown :deep(:not(pre) > code) {
+  color: bisque;
+  background-color: #222;
+}

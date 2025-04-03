@@ -24,21 +24,31 @@
         maxrows="5"
       />
     </UFormField>
-    <UFormField label="附注(nn)" class="mb-4">
-      <MonacoTextArea
-        ref="refInputNote"
-        v-model:text="refModel.note"
-        language="markdown"
-        maxrows="15"
-      />
-    </UFormField>
-
     <div class="flex flex-row gap-4">
       <UButton :loading="refModel.loading" color="secondary" @click="save">
         保存(shift+s)
       </UButton>
       <UButton @click="newFlashcard"> 新建(shift+n) </UButton>
     </div>
+    <UFormField label="附注(nn)" class="mb-4">
+      <div v-if="refModel.showNotePreview" class="mb-2">
+        <UButton
+          @click="refModel.showNotePreview = false"
+          color="secondary"
+          size="small"
+        >
+          关闭预览
+        </UButton>
+        <MarkdownPreview :content="refModel.note" />
+      </div>
+      <MonacoTextArea
+        v-show="!refModel.showNotePreview"
+        ref="refInputNote"
+        v-model:text="refModel.note"
+        language="markdown"
+        maxrows="15"
+      />
+    </UFormField>
 
     <!-- Debug Info -->
     <!-- <DebugInfo v-model="refModel" /> -->
@@ -56,6 +66,7 @@ const refModel = reactive({
   tags: "",
   note: "",
   loading: false,
+  showNotePreview: false,
 })
 const refInputQ = ref(null)
 const refInputTags = ref(null)

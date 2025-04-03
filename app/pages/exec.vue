@@ -8,7 +8,11 @@
           答案
           <UKbd>Ctrl</UKbd>+<UKbd>Enter</UKbd>
         </template>
-        <MonacoTextArea ref="refEditor" v-model:text="refModel.userA" v-model:language="refModel.alang"/>
+        <MonacoTextArea
+          ref="refEditor"
+          v-model:text="refModel.userA"
+          v-model:language="refModel.alang"
+        />
       </UFormField>
     </div>
 
@@ -31,7 +35,7 @@
       <div>附注: <UKbd>N</UKbd></div>
       <UCollapsible v-model:open="refShowNote" :unmount-on-hide="false">
         <template #content>
-          <div ref="refNote" class="md">&nbsp;</div>
+          <div ref="refNote" class="markdown">&nbsp;</div>
         </template>
       </UCollapsible>
     </div>
@@ -183,21 +187,3 @@ onMounted(async () => {
   loadFlashcard({ reload: true })
 })
 </script>
-
-<style scoped>
-.md {
-  font-size: 1rem;
-  line-height: 2rem;
-}
-.md :deep(h1),
-.md :deep(h2),
-.md :deep(h3) {
-  font-size: 1.2rem;
-  margin: 1rem 0;
-}
-
-.md :deep(:not(pre) > code) {
-  color: bisque;
-  background-color: #222;
-}
-</style>
