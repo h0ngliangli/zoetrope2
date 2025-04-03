@@ -108,8 +108,7 @@ const newFlashcard = () => {
 // 根据refModel.id的变化，自动跳转到url
 watch(
   () => refModel.id,
-  (newId, oldId) => {
-    console.log("id changed", oldId, newId)
+  (newId, _) => {
     router.replace(`/edit/${newId}`)
   }
 )
@@ -120,7 +119,6 @@ onMounted(async () => {
   if (Number.isInteger(Number.parseInt(route.params.id))) {
     const response = await $fetch(`/api/get/${route.params.id}`)
     if (response.ok) {
-      console.log(response.data)
       refModel.id = response.data.id
       refModel.q = response.data.q
       refModel.a = response.data.a

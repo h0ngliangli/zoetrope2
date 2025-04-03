@@ -119,6 +119,9 @@ const autoAjustEditorHeight = (event) => {
     // 如果内容高度没有变化，则不调整高度
     return
   }
+  if (refEditorContainer.value == null) {
+    return
+  }
   const contentHeight = event
     ? event.contentHeight
     : monacoEditor.getContentHeight()

@@ -9,8 +9,6 @@ md.use(
 )
 
 export const useMarkdownIt_render2Html = (text) => {
-  console.log("rendering markdown", text)
   const html = md.render(text)
-  console.log("rendered html", html)
   return html
 }
