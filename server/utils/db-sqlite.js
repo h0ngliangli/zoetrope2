@@ -86,7 +86,7 @@ export const utilDbSearch = async (keyword) => {
     q like ${`%${keyword}%`} or 
     a like ${`%${keyword}%`} or 
     tags like ${`%${keyword} %`}`
-  logger.debug("search %s %o", keyword, sqlResult.rows)
+  logger.debug("查找关键字 %s 返回%s条记录.", keyword, sqlResult.rows.length)
   return sqlResult.rows.map((row) => {
     row.tags = row.tags.trim()
     return row
