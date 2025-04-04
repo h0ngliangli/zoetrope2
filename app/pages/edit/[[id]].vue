@@ -1,9 +1,11 @@
 <template>
   <div class="p-4 grid grid-cols-1 gap-4">
     <UFormField label="提问(q)" class="mb-4">
-      <UInput
+      <UTextarea
         ref="refInputQ"
         v-model="refModel.q"
+        rows="1"
+        autoresize
         placeholder="你的问题是什么?"
         class="w-full"
       />
@@ -40,7 +42,7 @@
     </UFormField>
 
     <!--预览窗口 -->
-    <UModal v-model:open="refModel.showNotePreview" >
+    <UModal v-model:open="refModel.showNotePreview">
       <template #content>
         <div class="p-4 overflow-auto">
           <MarkdownPreview v-model="refModel.note" />
