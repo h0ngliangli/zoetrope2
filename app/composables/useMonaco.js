@@ -23,6 +23,7 @@ export const useMonaco_CreateEditor = (container, options) => {
     renderLineHighlight: "none",
     scrollBeyondLastLine: false,
     theme: "vs-dark",
+    wordWrap: "on",
     // override options
     ...options,
   }

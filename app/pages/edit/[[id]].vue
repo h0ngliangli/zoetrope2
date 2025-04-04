@@ -33,23 +33,31 @@
       <UButton @click="newFlashcard"> 新建(shift+n) </UButton>
     </div>
     <UFormField label="附注(nn), 预览(yy)" class="mb-4">
-      <MonacoTextArea
-        ref="refInputNote"
-        v-model:text="refModel.note"
-        language="markdown"
-        maxrows="15"
-      />
+      <div class="flex flex-row gap-4">
+        <MonacoTextArea
+          ref="refInputNote"
+          v-model:text="refModel.note"
+          language="markdown"
+          maxrows="15"
+          class="flex-1"
+        />
+        <div
+          ref="refElePreview"
+          class="flex-1 p-4 overflow-auto border border-(--ui-border) rounded-2xl max-h-100"
+        >
+          <MarkdownPreview v-model="refModel.note" />
+        </div>
+      </div>
     </UFormField>
 
     <!--预览窗口 -->
-    <UModal v-model:open="refModel.showNotePreview">
+    <UModal v-model:open="refModel.showNotePreview" fullscreen>
       <template #content>
         <div class="p-4 overflow-auto">
           <MarkdownPreview v-model="refModel.note" />
         </div>
       </template>
     </UModal>
-
     <!-- Debug Info -->
     <!-- <DebugInfo v-model="refModel" /> -->
   </div>
@@ -72,6 +80,7 @@ const refInputQ = ref(null)
 const refInputTags = ref(null)
 const refInputA = ref(null)
 const refInputNote = ref(null)
+const refElePreview = ref(null)
 
 const save = async () => {
   refModel.loading = true
@@ -115,6 +124,20 @@ watch(
   }
 )
 
+// 根据refInputNote高的变化，自动调整预览容器refElePreview的高度
+// watch(
+//   () => {
+//     if (refInputNote.value) {
+//       return refInputNote.value.style.height
+//     }
+//     return 0
+//   },
+//   (newHeight, _) => {
+//     console.log("newHeight", newHeight)
+//     refElePreview.value.style.height = `${newHeight}px`
+//   }
+// )
+
 // vue中无法直接在<script setup>z中调用async函数, 这样会导致ref无法显示，
 // 在mounted钩子中调用
 onMounted(async () => {
@@ -134,6 +157,16 @@ onMounted(async () => {
   } else {
     // 如果是新建卡片，直接赋值
     refModel.id = "new"
+  }
+  // 初始化同步refInputNote和refElePreview的高度
+  if (refInputNote.value) {
+    console.log("refInputNote.value", refInputNote.value)
+    console.log("refInputNote.value.style", refInputNote.value.style)
+    console.log(
+      "refInputNote.value.style.height",
+      refInputNote.value.style.height
+    )
+    refElePreview.value.style.height = `${refInputNote.value.style.height}px`
   }
 })
 // workaround 确保defineShotcuts在production模式下不被优化掉
