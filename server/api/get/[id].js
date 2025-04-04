@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
       message: "没有找到对应的卡片",
     }
   }
-  logger.debug("flashcard %o", flashcard)
+  logger.debug("成功读取flashcard id: %s q: %s...", flashcard.id, flashcard.q.substring(0, 10))
   return {
     statusCode: 200,
     ok: true,
