@@ -158,16 +158,6 @@ onMounted(async () => {
     // 如果是新建卡片，直接赋值
     refModel.id = "new"
   }
-  // 初始化同步refInputNote和refElePreview的高度
-  if (refInputNote.value) {
-    console.log("refInputNote.value", refInputNote.value)
-    console.log("refInputNote.value.style", refInputNote.value.style)
-    console.log(
-      "refInputNote.value.style.height",
-      refInputNote.value.style.height
-    )
-    refElePreview.value.style.height = `${refInputNote.value.style.height}px`
-  }
 })
 // workaround 确保defineShotcuts在production模式下不被优化掉
 const _ = defineShortcuts({
