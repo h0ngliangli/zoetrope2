@@ -1,8 +1,13 @@
+/* 这里下载字体只是为了学习, Noto Sans SC和默认的sans并没有太大区别. */
+/* sans-serif往往作为font-family中的最后一个选项,其本身不表示某种
+具体的字体,而是由系统决定.*/
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+SC:wght@200..900&display=swap");
 @import "tailwindcss" theme(static);
 @import "@nuxt/ui";
 
 @theme {
-  --font-sans: "Public Sans", sans-serif;
+  --font-sans: "Noto Sans SC", sans-serif;
 }
 .sm\:grid-cols-2 {
   @media (width >= 40rem /* 640px */) {
