@@ -45,5 +45,5 @@
 }
 
 .shortcut-text {
-  @apply text-xs text-(--ui-text-dimmed) border rounded-(--ui-radius) ml-2 mr-2 pl-1 pr-1
+  @apply text-xs text-(--ui-text-dimmed) border rounded-(--ui-radius) ml-2 mr-2 pb-0.5 pl-1 pr-1;
 }
