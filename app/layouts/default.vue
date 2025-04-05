@@ -3,15 +3,19 @@
     <header
       class="bg-gray-800 text-white p-1 flex flex-row items-center gap-4 pl-4"
     >
-      <ULink to="/add">新建</ULink>
-      <ULink to="/exec">练习</ULink>
+      <ULink to="/add">新建<ShortcutText text="alt+n"/></ULink>
+      <ULink to="/exec">练习<ShortcutText text="alt+e"/></ULink>
       <UInput
         ref="refInputKw"
         v-model="refKw"
-        class="w-32"
+        class="w-40"
         placeholder="关键字或id"
         @keydown.enter="onEdit"
-      />
+      >
+        <template v-if="refKw.length == 0" #trailing>
+          <div class="shortcut-text">alt+/</div>
+        </template>
+      </UInput>
     </header>
     <main class="flex-grow p-4">
       <slot />
@@ -43,8 +47,13 @@ const onEdit = async () => {
 
 const _ = defineShortcuts({
   "alt_/": () => {
-    console.log("shift_y")
     refInputKw.value.inputRef.focus()
+  },
+  alt_n: () => {
+    navigateTo({ path: "/add" })
+  },
+  alt_e: () => {
+    navigateTo({ path: "/exec" })
   },
 })
 console.log("defined shortcuts", _)

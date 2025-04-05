@@ -1,6 +1,9 @@
 <template>
-  <div class="p-4 grid grid-cols-1 gap-4">
-    <UFormField label="提问(q)" class="mb-4">
+  <div id="a" class="flex flex-col gap-4">
+    <UFormField size="md">
+      <template #label>
+        <div class="text-lg">提问<ShortcutText text="q" /></div>
+      </template>
       <UTextarea
         ref="refInputQ"
         v-model="refModel.q"
@@ -10,7 +13,11 @@
         class="w-full"
       />
     </UFormField>
-    <UFormField label="标签(t)" class="mb-4">
+    <UFormField>
+      <template #label>
+        <div class="text-lg">标签<ShortcutText text="t" /></div>
+      </template>
+
       <UInput
         ref="refInputTags"
         v-model="refModel.tags"
@@ -18,7 +25,10 @@
         class="w-full"
       />
     </UFormField>
-    <UFormField label="答案(aa)" class="mb-4">
+    <UFormField>
+      <template #label>
+        <div class="text-lg">答案<ShortcutText text="aa" /></div>
+      </template>
       <MonacoTextArea
         ref="refInputA"
         v-model:text="refModel.a"
@@ -26,13 +36,20 @@
         maxrows="5"
       />
     </UFormField>
-    <div class="flex flex-row gap-4">
-      <UButton :loading="refModel.loading" color="secondary" @click="save">
-        保存(shift+s)
-      </UButton>
-      <UButton @click="newFlashcard"> 新建(shift+n) </UButton>
-    </div>
-    <UFormField label="附注(nn), 预览(yy)" class="mb-4">
+    <UButton
+      :loading="refModel.loading"
+      class="w-24"
+      color="secondary"
+      @click="save"
+    >
+      保存(alt+s)
+    </UButton>
+    <UFormField>
+      <template #label>
+        <div class="text-lg">
+          附注<ShortcutText text="nn" />预览<ShortcutText text="yy" />
+        </div>
+      </template>
       <div class="flex flex-row gap-4">
         <MonacoTextArea
           ref="refInputNote"
@@ -107,15 +124,6 @@ const save = async () => {
   }, 1000)
 }
 
-const newFlashcard = () => {
-  refModel.id = "new"
-  refModel.q = ""
-  refModel.a = ""
-  refModel.alang = "plaintext"
-  refModel.tags = ""
-  refModel.note = ""
-}
-
 // 根据refModel.id的变化，自动跳转到url
 watch(
   () => refModel.id,
@@ -177,8 +185,7 @@ const _ = defineShortcuts({
   "y-y": () => {
     refModel.showNotePreview = !refModel.showNotePreview
   },
-  shift_s: save,
-  shift_n: newFlashcard,
+  alt_s: save,
   escape: {
     usingInput: true,
     // 取消当前元素的焦点

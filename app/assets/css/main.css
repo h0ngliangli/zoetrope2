@@ -43,3 +43,7 @@
   color: bisque;
   background-color: #222;
 }
+
+.shortcut-text {
+  @apply text-sm text-(--ui-text-dimmed) border rounded-(--ui-radius) ml-2 mr-2 pl-1 pr-1
+}
