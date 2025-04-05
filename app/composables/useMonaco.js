@@ -8,7 +8,8 @@ export const useMonaco = () => {
   return monaco
 }
 
-// 创建monaco.editor实例
+// 创建monaco.editor实例. options参数参考
+// https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.IStandaloneEditorConstructionOptions.html
 export const useMonaco_CreateEditor = (container, options) => {
   const mergedOptions = {
     // default options
