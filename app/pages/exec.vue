@@ -1,21 +1,13 @@
 <template>
-  <div class="p-4 flex flex-col gap-2">
-    <div>提问: {{ refModel.q }}</div>
-    <div>标签: {{ refModel.tags }}</div>
+  <div class="flex flex-col gap-2">
+    <div class="text-center text-lg">{{ refModel.q }}<TagsText :text="refModel.tags" /></div>
     <div>
-      <UFormField>
-        <template #label>
-          答案
-          <UKbd>Ctrl</UKbd>+<UKbd>Enter</UKbd>
-        </template>
-        <MonacoTextArea
-          ref="refEditor"
-          v-model:text="refModel.userA"
-          v-model:language="refModel.alang"
-        />
-      </UFormField>
+      <MonacoTextArea
+        ref="refEditor"
+        v-model:text="refModel.userA"
+        v-model:language="refModel.alang"
+      />
     </div>
-
     <div>
       <UButton
         class="m-2"
@@ -32,7 +24,7 @@
       </UButton>
     </div>
     <div>
-      <div>附注: <UKbd>N</UKbd></div>
+      <div>附注: <ShortcutText text="nn" /></div>
       <UCollapsible v-model:open="refShowNote" :unmount-on-hide="false">
         <template #content>
           <div ref="refNote" class="markdown">&nbsp;</div>
@@ -166,7 +158,7 @@ const init = async () => {
     a: () => {
       refEditor.value.focus()
     },
-    n: () => {
+    "n-n": () => {
       refShowNote.value = !refShowNote.value
     },
     d: () => {

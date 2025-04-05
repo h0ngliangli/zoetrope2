@@ -3,17 +3,17 @@
     <header
       class="bg-gray-800 text-white p-1 flex flex-row items-center gap-4 pl-4"
     >
-      <ULink to="/add">新建<ShortcutText text="alt+n"/></ULink>
-      <ULink to="/exec">练习<ShortcutText text="alt+e"/></ULink>
+      <ULink to="/add">新建<ShortcutText text="shift+n"/></ULink>
+      <ULink to="/exec">练习<ShortcutText text="shift+e"/></ULink>
       <UInput
         ref="refInputKw"
         v-model="refKw"
-        class="w-40"
+        class="w-32"
         placeholder="关键字或id"
         @keydown.enter="onEdit"
       >
         <template v-if="refKw.length == 0" #trailing>
-          <div class="shortcut-text">alt+/</div>
+          <div class="shortcut-text">/</div>
         </template>
       </UInput>
     </header>
@@ -46,13 +46,14 @@ const onEdit = async () => {
 }
 
 const _ = defineShortcuts({
-  "alt_/": () => {
+  // shift_/ 不work, alt所有组合键都不work
+  "/": () => {
     refInputKw.value.inputRef.focus()
   },
-  alt_n: () => {
+  shift_n: () => {
     navigateTo({ path: "/add" })
   },
-  alt_e: () => {
+  shift_e: () => {
     navigateTo({ path: "/exec" })
   },
 })
