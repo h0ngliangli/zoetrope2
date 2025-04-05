@@ -7,7 +7,7 @@
       <UTextarea
         ref="refInputQ"
         v-model="refModel.q"
-        rows="1"
+        :rows="1"
         autoresize
         placeholder="你的问题是什么?"
         class="w-full"
