@@ -1,5 +1,5 @@
 <template>
-  <div ref="refMain" class="markdown test">a</div>
+  <div ref="refMain" class="markdown" />
 </template>
 
 <script setup>
@@ -14,9 +14,3 @@ onMounted(() => {
   })
 })
 </script>
-
-<style scoped>
-.test {
-  height: 100%;
-}
-</style>
