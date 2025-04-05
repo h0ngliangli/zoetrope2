@@ -162,7 +162,7 @@ onMounted(async () => {
 // workaround 确保defineShotcuts在production模式下不被优化掉
 const _ = defineShortcuts({
   q: () => {
-    refInputQ.value.inputRef.focus()
+    refInputQ.value.textareaRef.focus()
   },
   t: () => {
     refInputTags.value.inputRef.focus()
