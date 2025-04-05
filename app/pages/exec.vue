@@ -86,9 +86,9 @@ const loadFlashcard = async ({ reload = false }) => {
     console.log(response.data)
     refModel.id = response.data.id
     refModel.q = response.data.q
-    refModel.a = ""
+    refModel.userA = ""
     refModel.alang = response.data.alang || "plaintext"
-    refModel.userA = response.data.a
+    refModel.a = response.data.a
     refModel.tags = response.data.tags
     refModel.note = response.data.note
     refTest.value = refModel
@@ -138,10 +138,7 @@ const onBlur = () => {
 }
 
 const onFocus = () => {
-  console.log("focus")
-  if (refA.value && refA.value.textareaRef) {
-    refA.value.textareaRef.focus()
-  }
+  refEditor.value.focus()
 }
 
 const onEdit = () => {
