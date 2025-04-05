@@ -1,9 +1,12 @@
 <template>
   <div class="flex flex-col h-screen">
-    <header class="bg-gray-800 text-white p-1 flex flex-row items-center gap-4 pl-4">
+    <header
+      class="bg-gray-800 text-white p-1 flex flex-row items-center gap-4 pl-4"
+    >
       <ULink to="/add">新建</ULink>
       <ULink to="/exec">练习</ULink>
       <UInput
+        ref="refInputKw"
         v-model="refKw"
         class="w-32"
         placeholder="关键字或id"
@@ -13,14 +16,12 @@
     <main class="flex-grow p-4">
       <slot />
     </main>
-    <!-- <footer class="bg-gray-800 text-white p-4">
-      <p>&copy; 2023 My App</p>
-    </footer> -->
   </div>
 </template>
 
 <script setup>
 const refKw = ref("")
+const refInputKw = ref(null)
 const onEdit = async () => {
   let kw = refKw.value
   refKw.value = ""
@@ -39,4 +40,12 @@ const onEdit = async () => {
   // console.log("encoded", encoded)
   await navigateTo({ path: `/search/${kw}` })
 }
+
+const _ = defineShortcuts({
+  "alt_/": () => {
+    console.log("shift_y")
+    refInputKw.value.inputRef.focus()
+  },
+})
+console.log("defined shortcuts", _)
 </script>
