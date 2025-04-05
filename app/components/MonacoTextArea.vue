@@ -172,10 +172,10 @@ onMounted(() => {
     lineHeight: lineHeight,
   })
   // 显示所有支持的语言
-  console.log(
-    "monaco.languages.getLanguages()",
-    monaco.languages.getLanguages()
-  )
+  // console.log(
+  //   "monaco.languages.getLanguages()",
+  //   monaco.languages.getLanguages()
+  // )
   // 事件处理
   // 设置事件响应函数(根据内容调整editor高度)
   monacoEditor.onDidContentSizeChange(autoAjustEditorHeight)
