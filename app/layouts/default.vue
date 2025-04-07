@@ -3,8 +3,24 @@
     <header
       class="bg-gray-800 text-white p-1 flex flex-row items-center gap-4 pl-4"
     >
-      <ULink to="/add">新建<ShortcutText text="shift+n"/></ULink>
-      <ULink to="/exec">练习<ShortcutText text="shift+e"/></ULink>
+      <ULink to="/add"
+        >新建<ShortcutHere
+          keys="shift_n"
+          @keydown="
+            () => {
+              navigateTo({ path: '/add' })
+            }
+          "
+      /></ULink>
+      <ULink to="/exec"
+        >练习<ShortcutHere
+          keys="shift_e"
+          @keydown="
+            () => {
+              navigateTo({ path: '/exec' })
+            }
+          "
+      /></ULink>
       <UInput
         ref="refInputKw"
         v-model="refKw"
@@ -12,8 +28,17 @@
         placeholder="关键字或id"
         @keydown.enter="onEdit"
       >
+        <!-- search 快捷键 -->
         <template v-if="refKw.length == 0" #trailing>
-          <div class="shortcut-text">/</div>
+          <ShortcutHere
+            keys="/"
+            @keydown="
+              () => {
+                console.log('search', refInputKw)
+                refInputKw.inputRef.focus()
+              }
+            "
+          />
         </template>
       </UInput>
     </header>
@@ -44,18 +69,4 @@ const onEdit = async () => {
   // console.log("encoded", encoded)
   await navigateTo({ path: `/search/${kw}` })
 }
-
-const _ = defineShortcuts({
-  // shift_/ 不work, alt所有组合键都不work
-  "/": () => {
-    refInputKw.value.inputRef.focus()
-  },
-  shift_n: () => {
-    navigateTo({ path: "/add" })
-  },
-  shift_e: () => {
-    navigateTo({ path: "/exec" })
-  },
-})
-console.log("defined shortcuts", _)
 </script>
