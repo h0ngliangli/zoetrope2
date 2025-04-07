@@ -29,7 +29,6 @@
 
 .markdown {
   font-size: 1rem;
-  line-height: 2rem;
   color: rgb(171, 171, 171);
 }
 .markdown :deep(h1),
@@ -42,6 +41,10 @@
 .markdown :deep(:not(pre) > code) {
   color: bisque;
   background-color: #222;
+}
+
+.markdown pre code {
+  font-size: 0.8rem;
 }
 
 .shortcut-text {
