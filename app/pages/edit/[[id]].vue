@@ -2,7 +2,16 @@
   <div id="a" class="flex flex-col gap-4">
     <UFormField size="md">
       <template #label>
-        <div class="text-lg">提问<ShortcutText text="q" /></div>
+        <div class="text-lg">
+          提问<ShortcutHere
+            keys="q"
+            @keydown="
+              () => {
+                refInputQ.textareaRef.focus()
+              }
+            "
+          />
+        </div>
       </template>
       <UTextarea
         ref="refInputQ"
@@ -15,7 +24,16 @@
     </UFormField>
     <UFormField>
       <template #label>
-        <div class="text-lg">标签<ShortcutText text="t" /></div>
+        <div class="text-lg">
+          标签<ShortcutHere
+            keys="t"
+            @keydown="
+              () => {
+                refInputTags.inputRef.focus()
+              }
+            "
+          />
+        </div>
       </template>
 
       <UInput
@@ -27,7 +45,16 @@
     </UFormField>
     <UFormField>
       <template #label>
-        <div class="text-lg">答案<ShortcutText text="aa" /></div>
+        <div class="text-lg">
+          答案<ShortcutHere
+            keys="a-a"
+            @keydown="
+              () => {
+                refInputAaa.focus()
+              }
+            "
+          />
+        </div>
       </template>
       <MonacoTextArea
         ref="refInputA"
@@ -47,7 +74,21 @@
     <UFormField>
       <template #label>
         <div class="text-lg">
-          附注<ShortcutText text="nn" />预览<ShortcutText text="yy" />
+          附注<ShortcutHere
+            keys="n-n"
+            @keydown="
+              () => {
+                refInputNote.focus()
+              }
+            "
+          />预览<ShortcutHere
+            keys="y-y"
+            @keydown="
+              () => {
+                refModel.showNotePreview = !refModel.showNotePreview
+              }
+            "
+          />
         </div>
       </template>
       <div class="flex flex-row gap-4">
@@ -169,22 +210,6 @@ onMounted(async () => {
 })
 // workaround 确保defineShotcuts在production模式下不被优化掉
 const _ = defineShortcuts({
-  q: () => {
-    refInputQ.value.textareaRef.focus()
-  },
-  t: () => {
-    refInputTags.value.inputRef.focus()
-  },
-  "a-a": () => {
-    refInputA.value.focus()
-  },
-  "n-n": () => {
-    console.log("n")
-    refInputNote.value.focus()
-  },
-  "y-y": () => {
-    refModel.showNotePreview = !refModel.showNotePreview
-  },
   alt_s: save,
   escape: {
     usingInput: true,
@@ -200,5 +225,4 @@ const _ = defineShortcuts({
     },
   },
 })
-console.log("shortcuts", _)
 </script>
