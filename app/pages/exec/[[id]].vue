@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col gap-2">
-    <div class="text-lg m-auto" style="max-width: 80%;"><MarkdownPreview v-model="refModel.q" /></div>
+    <div class="text-lg m-auto" style="max-width: 80%">
+      <MarkdownPreview v-model="refModel.q" />
+    </div>
     <div class="m-auto"><TagsText :text="refModel.tags" /></div>
     <div>
       <MonacoTextArea
@@ -43,6 +45,7 @@ import shiki from "@shikijs/markdown-it"
 
 // vars
 const md = markdownit()
+const route = useRoute()
 const router = useRouter()
 const refModel = reactive({
   id: 0,
@@ -170,10 +173,26 @@ const init = async () => {
     },
   })
   console.log("defined shortcuts", _)
+
+  if (Number.isInteger(Number.parseInt(route.params.id))) {
+    refModel.id = Number.parseInt(route.params.id)
+    loadFlashcard({ reload: true })
+  } else {
+    // 如果是新建卡片，直接赋值
+    refModel.id = 0
+    loadFlashcard({ reload: false })
+  }
 }
+
+// 根据refModel.id的变化，自动跳转到url
+watch(
+  () => refModel.id,
+  (newId, _) => {
+    router.replace(`/exec/${newId}`)
+  }
+)
 
 onMounted(async () => {
   await init()
-  loadFlashcard({ reload: true })
 })
 </script>
