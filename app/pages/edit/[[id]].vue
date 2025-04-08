@@ -52,14 +52,7 @@
     <UFormField>
       <template #label>
         <div class="text-lg">
-          答案<ShortcutHere
-            keys="a-a"
-            @keydown="
-              () => {
-                refInputA.focus()
-              }
-            "
-          />
+          答案<ShortcutHere keys="a" @keydown="refInputA.focus" />
         </div>
       </template>
       <MonacoTextArea
@@ -81,14 +74,14 @@
       <template #label>
         <div class="text-lg">
           附注<ShortcutHere
-            keys="n-n"
+            keys="n"
             @keydown="
               () => {
                 refInputNote.focus()
               }
             "
           />预览<ShortcutHere
-            keys="y-y"
+            keys="y"
             @keydown="
               () => {
                 refModel.showNotePreview = !refModel.showNotePreview
@@ -215,7 +208,7 @@ onMounted(async () => {
   }
 })
 // workaround 确保defineShotcuts在production模式下不被优化掉
-const _ = defineShortcuts({
+const shortcuts = defineShortcuts({
   alt_s: save,
   escape: {
     usingInput: true,
@@ -231,4 +224,5 @@ const _ = defineShortcuts({
     },
   },
 })
+console.log("defined shortcuts", shortcuts)
 </script>

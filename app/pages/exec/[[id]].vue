@@ -27,7 +27,7 @@
     <div class="flex flex-row gap-2">
       <UButton @click="onCheckA">提交(s)</UButton>
       <UButton :loading="refLoading" @click="loadFlashcard({ reload: false })">
-        下一题(shift_n)
+        下一题(x)
       </UButton>
 
       <UButton trailing-icon="i-lucide-arrow-right" @click="onEdit">
@@ -37,7 +37,6 @@
     <div>
       <div @click="toggleRefShowNote">
         附注:
-        <!-- n-n 在production模式下不work -->
         <ShortcutHere keys="n" @keydown="toggleRefShowNote" />
       </div>
       <UCollapsible v-model:open="refShowNote" :unmount-on-hide="false">
@@ -164,7 +163,7 @@ const init = async () => {
     e: () => {
       onEdit()
     },
-    shift_n: () => {
+    x: () => {
       loadFlashcard({ reload: false })
     },
     s: () => {
