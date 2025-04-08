@@ -54,6 +54,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  readonly: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 // variables
@@ -176,6 +180,7 @@ onMounted(() => {
     fontSize: props.fontsSize,
     language: modelLanguage.value,
     lineHeight: lineHeight,
+    readOnly: props.readonly, // 注意大小写
   })
   // 显示所有支持的语言
   // console.log(
