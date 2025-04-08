@@ -52,7 +52,15 @@
     <UFormField>
       <template #label>
         <div class="text-lg">
-          答案<ShortcutHere keys="a" @keydown="refInputA.focus" />
+          <!--@keydown="refInputA.focus"这条语句会产生问题,因为此时refInputA可能还是null. -->
+          答案<ShortcutHere
+            keys="a"
+            @keydown="
+              () => {
+                refInputA.focus()
+              }
+            "
+          />
         </div>
       </template>
       <MonacoTextArea
