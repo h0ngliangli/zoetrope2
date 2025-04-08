@@ -12,6 +12,7 @@
 <template>
   <div>
     <USelectMenu
+      v-if="!props.hideLanguage"
       v-model="modelLanguage"
       value-key="label"
       :items="initLanguageItems()"
@@ -47,6 +48,11 @@ const props = defineProps({
   language: {
     type: String,
     default: "plaintext",
+  },
+  /* 隐藏语言栏 */
+  hideLanguage: {
+    type: Boolean,
+    default: false,
   },
 })
 

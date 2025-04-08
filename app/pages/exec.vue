@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-col gap-2">
-    <div class="text-center text-lg">{{ refModel.q }}<TagsText :text="refModel.tags" /></div>
+    <div class="text-lg m-auto" style="max-width: 80%;"><MarkdownPreview v-model="refModel.q" /></div>
+    <div class="m-auto"><TagsText :text="refModel.tags" /></div>
     <div>
       <MonacoTextArea
         ref="refEditor"

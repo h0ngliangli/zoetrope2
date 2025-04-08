@@ -1,26 +1,33 @@
 <template>
-  <div id="a" class="flex flex-col gap-4">
-    <UFormField size="md">
+  <div class="flex flex-col gap-4">
+    <UFormField>
       <template #label>
         <div class="text-lg">
           提问<ShortcutHere
             keys="q"
             @keydown="
               () => {
-                refInputQ.textareaRef.focus()
+                refInputQ.focus()
               }
             "
           />
         </div>
       </template>
-      <UTextarea
-        ref="refInputQ"
-        v-model="refModel.q"
-        :rows="1"
-        autoresize
-        placeholder="你的问题是什么?"
-        class="w-full"
-      />
+      <div class="flex flex-row gap-4">
+        <MonacoTextArea
+          ref="refInputQ"
+          v-model:text="refModel.q"
+          language="markdown"
+          hide-language
+          maxrows="15"
+          class="flex-1"
+        />
+        <div
+          class="flex-1 p-4 overflow-auto border border-(--ui-border) rounded-2xl max-h-100"
+        >
+          <MarkdownPreview v-model="refModel.q" />
+        </div>
+      </div>
     </UFormField>
     <UFormField>
       <template #label>
@@ -50,7 +57,7 @@
             keys="a-a"
             @keydown="
               () => {
-                refInputAaa.focus()
+                refInputA.focus()
               }
             "
           />
@@ -96,6 +103,7 @@
           ref="refInputNote"
           v-model:text="refModel.note"
           language="markdown"
+          hide-language
           maxrows="15"
           class="flex-1"
         />
