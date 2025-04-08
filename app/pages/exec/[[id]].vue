@@ -9,25 +9,41 @@
         ref="refEditor"
         v-model:text="refModel.userA"
         v-model:language="refModel.alang"
+        maxrows="15"
       />
     </div>
-    <div>
-      <UButton
-        class="m-2"
-        :loading="refLoading"
-        @click="loadFlashcard({ reload: false })"
-      >
-        下一题
-        <UKbd>enter</UKbd>
+    <div v-if="refResult === true" class="text-(--ui-success)">回答正确</div>
+    <div v-else-if="refResult === false" class="text-(--ui-error)">回答错误</div>
+    <MonacoTextArea
+      v-show="refShowA"
+      v-model:text="refModel.a"
+      v-model:language="refModel.alang"
+      hide-language
+      maxrows="15"
+      readonly
+    />
+    <div class="flex flex-row gap-2">
+      <UButton @click="onCheckA">提交(s)</UButton>
+      <UButton :loading="refLoading" @click="loadFlashcard({ reload: false })">
+        下一题(shift_n)
       </UButton>
 
-      <UButton class="m-2" trailing-icon="i-lucide-arrow-right" @click="onEdit">
-        编辑 {{ refModel.id }}
-        <UKbd>E</UKbd>
+      <UButton trailing-icon="i-lucide-arrow-right" @click="onEdit">
+        编辑 {{ refModel.id }}(e)
       </UButton>
     </div>
     <div>
-      <div>附注: <ShortcutText text="nn" /></div>
+      <div>
+        附注:
+        <ShortcutHere
+          keys="n-n"
+          @keydown="
+            () => {
+              refShowNote = !refShowNote
+            }
+          "
+        />
+      </div>
       <UCollapsible v-model:open="refShowNote" :unmount-on-hide="false">
         <template #content>
           <div ref="refNote" class="markdown">&nbsp;</div>
@@ -56,18 +72,18 @@ const refModel = reactive({
   tags: "",
   note: "",
 })
-const refTest = ref("test")
-const refA = useTemplateRef("refA")
 const refResult = ref(null)
 const refLoading = ref(false)
+const refShowA = ref(false)
 const refShowNote = ref(false)
-const refShowDebug = ref(false)
 const refNote = ref(null)
 const refEditor = useTemplateRef("refEditor")
 
 //
 const loadFlashcard = async ({ reload = false }) => {
   refLoading.value = true
+  refShowA.value = false
+  refModel.userA = ""
   refShowNote.value = false
   refResult.value = null
   let response = null
@@ -87,8 +103,14 @@ const loadFlashcard = async ({ reload = false }) => {
     refModel.a = response.data.a
     refModel.tags = response.data.tags
     refModel.note = response.data.note
-    refTest.value = refModel
-    onFocus()
+    // 这里直接调用会导致monaco editor无法接受任何输入, 可能的原因是因为
+    // monaco editor还没有完全加载完成 就算用nextTick也不行
+    // 这里使用setTimeout来解决这个问题
+    // onFocus()
+    // nextTick(onFocus)
+    // setTimeout(() => {
+    //   onFocus()
+    // }, 500)
     if (refModel.note) {
       console.log("refNote", refNote)
       refNote.value.innerHTML = md.render(refModel.note)
@@ -104,33 +126,13 @@ const loadFlashcard = async ({ reload = false }) => {
   }, 1000)
 }
 
-const onCheckA = async (event) => {
-  if (event.ctrlKey && event.key === "Enter") {
-    console.log("ctrl + enter pressed")
-    // effect of checking answer
-    await playCheckEffect()
-    if (refModel.userA === refModel.a) {
-      console.log("correct")
-      refResult.value = true
-    } else {
-      console.log("wrong")
-      refResult.value = false
-    }
+const onCheckA = () => {
+  if (refModel.userA.trim() === refModel.a.trim()) {
+    refResult.value = true
+  } else {
+    refResult.value = false
   }
-}
-
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const playCheckEffect = async () => {
-  for (let i = 0; i < 2; i++) {
-    onFocus()
-    await wait(100)
-    onBlur()
-    await wait(100)
-  }
-}
-
-const onBlur = () => {
-  refA.value.textareaRef.blur()
+  refShowA.value = true
 }
 
 const onFocus = () => {
@@ -156,20 +158,17 @@ const init = async () => {
   // 它在production模式下没有生效, 原因可能是没有被编译到js中
   // 这里暂时通过执行输出的结果让编译器认为它被使用了
   const _ = defineShortcuts({
-    enter: () => {
-      loadFlashcard({ reload: false })
-    },
     a: () => {
-      refEditor.value.focus()
-    },
-    "n-n": () => {
-      refShowNote.value = !refShowNote.value
-    },
-    d: () => {
-      refShowDebug.value = !refShowDebug.value
+      onFocus()
     },
     e: () => {
       onEdit()
+    },
+    shift_n: () => {
+      loadFlashcard({ reload: false })
+    },
+    s: () => {
+      onCheckA()
     },
   })
   console.log("defined shortcuts", _)
