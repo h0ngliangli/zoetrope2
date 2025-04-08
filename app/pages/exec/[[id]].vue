@@ -13,7 +13,9 @@
       />
     </div>
     <div v-if="refResult === true" class="text-(--ui-success)">回答正确</div>
-    <div v-else-if="refResult === false" class="text-(--ui-error)">回答错误</div>
+    <div v-else-if="refResult === false" class="text-(--ui-error)">
+      回答错误
+    </div>
     <MonacoTextArea
       v-show="refShowA"
       v-model:text="refModel.a"
@@ -33,16 +35,10 @@
       </UButton>
     </div>
     <div>
-      <div>
+      <div @click="toggleRefShowNote">
         附注:
-        <ShortcutHere
-          keys="n-n"
-          @keydown="
-            () => {
-              refShowNote = !refShowNote
-            }
-          "
-        />
+        <!-- n-n 在production模式下不work -->
+        <ShortcutHere keys="n" @keydown="toggleRefShowNote" />
       </div>
       <UCollapsible v-model:open="refShowNote" :unmount-on-hide="false">
         <template #content>
@@ -137,6 +133,10 @@ const onCheckA = () => {
 
 const onFocus = () => {
   refEditor.value.focus()
+}
+
+const toggleRefShowNote = () => {
+  refShowNote.value = !refShowNote.value
 }
 
 const onEdit = () => {
