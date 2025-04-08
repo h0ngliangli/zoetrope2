@@ -28,6 +28,7 @@ const refModel = ref({
 
 onMounted(() => {
   // 这个函数在production模式下会被优化掉
+  console.log('define shortcuts', refModel.value.keys)
   const shortcuts = defineShortcuts({
     [refModel.value.keys]: (event) => {
       emit("keydown", event)
