@@ -28,27 +28,24 @@
         </div>
       </div>
     </UFormField>
-    <UFormField>
-      <template #label>
-        <div class="text-lg">
-          标签<ShortcutHere
-            keys="t"
-            @keydown="
-              () => {
-                refInputTags.inputRef.focus()
-              }
-            "
-          />
-        </div>
-      </template>
-
+    <div class="flex flex-row gap-2">
+      <div class="text-lg">
+        标签<ShortcutHere
+          keys="t"
+          @keydown="
+            () => {
+              refInputTags.inputRef.focus()
+            }
+          "
+        />
+      </div>
       <UInput
         ref="refInputTags"
         v-model="refModel.tags"
         placeholder="标签1 标签2 ..."
-        class="w-full"
       />
-    </UFormField>
+
+    </div>
     <UFormField>
       <template #label>
         <div class="text-lg">
@@ -70,14 +67,11 @@
         maxrows="5"
       />
     </UFormField>
-    <UButton
-      :loading="refModel.loading"
-      class="w-24"
-      color="secondary"
-      @click="save"
-    >
-      保存(alt+s)
-    </UButton>
+    <div class="flex flex-row gap-2">
+      <UButton :loading="refModel.loading" color="secondary" @click="save">
+        保存<ShortcutHere keys="alt_s" @keydown="save" />
+      </UButton>
+    </div>
     <UFormField>
       <template #label>
         <div class="text-lg">
@@ -217,7 +211,6 @@ onMounted(async () => {
 })
 // workaround 确保defineShotcuts在production模式下不被优化掉
 const shortcuts = defineShortcuts({
-  alt_s: save,
   escape: {
     usingInput: true,
     // 取消当前元素的焦点
