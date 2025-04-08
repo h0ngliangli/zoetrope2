@@ -137,6 +137,7 @@ const onCheckA = () => {
     refResult.value = false
   }
   refShowA.value = true
+  refShowNote.value = true
 }
 
 const onFocus = () => {
