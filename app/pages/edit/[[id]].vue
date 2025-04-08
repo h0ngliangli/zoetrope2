@@ -13,17 +13,16 @@
           />
         </div>
       </template>
-      <div class="flex flex-row gap-4">
+      <div class="grid grid-cols-2 gap-4">
         <MonacoTextArea
           ref="refInputQ"
           v-model:text="refModel.q"
           language="markdown"
           hide-language
           maxrows="15"
-          class="flex-1"
         />
         <div
-          class="flex-1 p-4 overflow-auto border border-(--ui-border) rounded-2xl max-h-100"
+          class="p-4 overflow-auto border border-(--ui-border) rounded-2xl max-h-100"
         >
           <MarkdownPreview v-model="refModel.q" />
         </div>
@@ -98,18 +97,17 @@
           />
         </div>
       </template>
-      <div class="flex flex-row gap-4">
+      <div class="grid grid-cols-2 gap-4">
         <MonacoTextArea
           ref="refInputNote"
           v-model:text="refModel.note"
           language="markdown"
           hide-language
           maxrows="15"
-          class="flex-1"
         />
         <div
           ref="refElePreview"
-          class="flex-1 p-4 overflow-auto border border-(--ui-border) rounded-2xl max-h-100"
+          class="p-4 overflow-auto border border-(--ui-border) rounded-2xl max-h-100"
         >
           <MarkdownPreview v-model="refModel.note" />
         </div>
