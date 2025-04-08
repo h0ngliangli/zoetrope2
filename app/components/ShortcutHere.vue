@@ -27,10 +27,12 @@ const refModel = ref({
 })
 
 onMounted(() => {
-  defineShortcuts({
+  // 这个函数在production模式下会被优化掉
+  const shortcuts = defineShortcuts({
     [refModel.value.keys]: (event) => {
       emit("keydown", event)
     },
   })
+  console.log("defined shortcuts", shortcuts)
 })
 </script>
