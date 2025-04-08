@@ -4,17 +4,19 @@
       <MarkdownPreview v-model="refModel.q" />
     </div>
     <div class="m-auto"><TagsText :text="refModel.tags" /></div>
+    <div>答案<ShortcutHere keys="a" @keydown="onFocus" /></div>
     <div>
       <MonacoTextArea
         ref="refEditor"
         v-model:text="refModel.userA"
         v-model:language="refModel.alang"
         maxrows="15"
+        hide-language
       />
     </div>
     <div v-if="refResult === true" class="text-(--ui-success)">回答正确</div>
     <div v-else-if="refResult === false" class="text-(--ui-error)">
-      回答错误
+      回答错误<ShortcutHere keys="h" @keydown="refShowA = null" />
     </div>
     <MonacoTextArea
       v-show="refShowA"
@@ -25,13 +27,20 @@
       readonly
     />
     <div class="flex flex-row gap-2">
-      <UButton @click="onCheckA">提交(s)</UButton>
+      <UButton @click="onCheckA"
+        >提交
+        <ShortcutHere keys="s" @keydown="onCheckA" />
+      </UButton>
       <UButton :loading="refLoading" @click="loadFlashcard({ reload: false })">
-        下一题(x)
+        下一题<ShortcutHere
+          keys="d"
+          @keydown="loadFlashcard({ reload: false })"
+        />
       </UButton>
 
       <UButton trailing-icon="i-lucide-arrow-right" @click="onEdit">
-        编辑 {{ refModel.id }}(e)
+        编辑 {{ refModel.id }}
+        <ShortcutHere keys="e" @keydown="onEdit" />
       </UButton>
     </div>
     <div>
@@ -67,7 +76,7 @@ const refModel = reactive({
   tags: "",
   note: "",
 })
-const refResult = ref(null)
+const refResult = ref(null) // null表示没有结果，true表示正确，false表示错误
 const refLoading = ref(false)
 const refShowA = ref(false)
 const refShowNote = ref(false)
@@ -156,21 +165,12 @@ const init = async () => {
   // TODO: 这里的事件监听有点问题
   // 它在production模式下没有生效, 原因可能是没有被编译到js中
   // 这里暂时通过执行输出的结果让编译器认为它被使用了
-  const _ = defineShortcuts({
-    a: () => {
-      onFocus()
-    },
-    e: () => {
-      onEdit()
-    },
-    x: () => {
-      loadFlashcard({ reload: false })
-    },
-    s: () => {
-      onCheckA()
-    },
-  })
-  console.log("defined shortcuts", _)
+  // const _ = defineShortcuts({
+  //   a: () => {
+  //     onFocus()
+  //   },
+  // })
+  // console.log("defined shortcuts", _)
 
   if (Number.isInteger(Number.parseInt(route.params.id))) {
     refModel.id = Number.parseInt(route.params.id)
