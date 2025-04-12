@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2">
+  <div :id="route.hash.substring(1)" class="flex flex-col gap-2">
     <div class="text-lg m-auto" style="max-width: 80%">
       <MarkdownPreview v-model="refModel.q" />
     </div>
@@ -31,8 +31,8 @@
         >提交
         <ShortcutHere keys="s" @keydown="onCheckA" />
       </UButton>
-      <UButton @click="router.replace('/exec')">
-        下一题<ShortcutHere keys="d" @keydown="router.replace('/exec')" />
+      <UButton @click="loadNext">
+        下一题<ShortcutHere keys="d" @keydown="loadNext" />
       </UButton>
 
       <UButton trailing-icon="i-lucide-arrow-right" @click="onEdit">
@@ -103,52 +103,55 @@ const onEdit = () => {
   router.push(`/edit/${refModel.id}`)
 }
 
-// 根据refModel.id的变化，自动跳转到url
-// watch(
-//   () => refModel.id,
-//   (newId, _) => {
-//     router.replace(`/exec/${newId}`)
-//   }
-// )
+/*
+load current(if no current, load next).
+load next.
+*/
+
+const loadHash = async () => {
+  const id = Number.parseInt(route.hash.substring(1))
+  if (Number.isInteger(id)) {
+    const response = await $fetch(`/api/get/${id}`)
+    if (!response.ok) {
+      showErrorToast(response.message)
+      return
+    }
+    parseResponse(response)
+  } else {
+    loadNext()
+  }
+}
+
+const loadNext = async () => {
+  let response = await $fetch(`/api/get/random-id`)
+  if (!response.ok) {
+    showErrorToast(response.message)
+    return
+  }
+  router.replace(`/exec#${response.data.id}`)
+  response = await $fetch(`/api/get/${response.data.id}`)
+  parseResponse(response)
+}
+
+const parseResponse = (response) => {
+  console.log(response.data)
+  refModel.id = response.data.id
+  refModel.q = response.data.q
+  refModel.userA = ""
+  refModel.alang = response.data.alang || "plaintext"
+  refModel.a = response.data.a
+  refModel.tags = response.data.tags
+  refModel.note = response.data.note
+  if (refModel.note) {
+    console.log("refNote", refNote)
+    refNote.value.innerHTML = md.render(refModel.note)
+  } else {
+    refNote.value.innerHTML = "(空)"
+    refShowNote.value = true
+  }
+}
 
 onMounted(async () => {
-  // redirect to /exec/:id
-  console.log("refModel.id", refModel.id)
-  if (!refModel.id) {
-    const response = await $fetch("/api/get/random-id")
-    if (response.ok) {
-      router.push(`/exec/${response.data.id}`)
-      return
-    } else {
-      showErrorToast(response.message)
-    }
-  }
-  const response = await $fetch(`/api/get/${refModel.id}`)
-  if (response.ok) {
-    console.log(response.data)
-    refModel.q = response.data.q
-    refModel.userA = ""
-    refModel.alang = response.data.alang || "plaintext"
-    refModel.a = response.data.a
-    refModel.tags = response.data.tags
-    refModel.note = response.data.note
-    // 这里直接调用会导致monaco editor无法接受任何输入, 可能的原因是因为
-    // monaco editor还没有完全加载完成 就算用nextTick也不行
-    // 这里使用setTimeout来解决这个问题
-    // onFocus()
-    // nextTick(onFocus)
-    // setTimeout(() => {
-    //   onFocus()
-    // }, 500)
-    if (refModel.note) {
-      console.log("refNote", refNote)
-      refNote.value.innerHTML = md.render(refModel.note)
-    } else {
-      refNote.value.innerHTML = "(空)"
-      refShowNote.value = true
-    }
-  } else {
-    //showErrorToast(response.message)
-  }
+  loadHash()
 })
 </script>
