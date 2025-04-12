@@ -44,7 +44,6 @@
         v-model="refModel.tags"
         placeholder="标签1 标签2 ..."
       />
-
     </div>
     <UFormField>
       <template #label>
@@ -69,7 +68,9 @@
     </UFormField>
     <div class="flex flex-row gap-2">
       <UButton :loading="refModel.loading" color="secondary" @click="save">
-        保存<ShortcutHere keys="alt_s" @keydown="save" />
+        <!-- TODO alt键似乎没有作用, 如果写成alt_s, 那么按s就可以触发了. -->
+        保存(shift+s)
+        <ShortcutHere keys="shift_s" hidden @keydown="save" />
       </UButton>
     </div>
     <UFormField>
