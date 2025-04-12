@@ -67,13 +67,19 @@ export const utilDbGet = async (id) => {
   return sqlResult.rows[0]
 }
 
-export const utilDbGetRandom = async () => {
-  if (ids.length === 0) {
-    await _loadIds()
-    _shuffle(ids)
-  }
+export const utilDbGetRandomId = async () => {
   const id = ids.pop()
   logger.debug("ids %s left", ids.length)
+  if (ids.length === 0) {
+    _loadIds().then(() => {
+      _shuffle(ids)
+    })
+  }
+  return id
+}
+
+export const utilDbGetRandom = async () => {
+  const id = utilDbGetRandomId()
   return utilDbGet(id)
 }
 

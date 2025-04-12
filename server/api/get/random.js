@@ -1,5 +1,4 @@
 export default defineEventHandler(async () => {
-  // eslint-disable-next-line no-undef
   const flashcard = await utilDbGetRandom()
   if (!flashcard) {
     return {

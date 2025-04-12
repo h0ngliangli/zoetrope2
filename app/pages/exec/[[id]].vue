@@ -31,11 +31,8 @@
         >提交
         <ShortcutHere keys="s" @keydown="onCheckA" />
       </UButton>
-      <UButton :loading="refLoading" @click="loadFlashcard({ reload: false })">
-        下一题<ShortcutHere
-          keys="d"
-          @keydown="loadFlashcard({ reload: false })"
-        />
+      <UButton @click="router.replace('/exec')">
+        下一题<ShortcutHere keys="d" @keydown="router.replace('/exec')" />
       </UButton>
 
       <UButton trailing-icon="i-lucide-arrow-right" @click="onEdit">
@@ -61,14 +58,13 @@
 
 <script setup>
 import markdownit from "markdown-it"
-import shiki from "@shikijs/markdown-it"
 
 // vars
 const md = markdownit()
 const route = useRoute()
 const router = useRouter()
 const refModel = reactive({
-  id: 0,
+  id: route.params.id,
   q: "",
   a: "",
   alang: "plaintext",
@@ -77,58 +73,10 @@ const refModel = reactive({
   note: "",
 })
 const refResult = ref(null) // null表示没有结果，true表示正确，false表示错误
-const refLoading = ref(false)
 const refShowA = ref(false)
 const refShowNote = ref(false)
 const refNote = ref(null)
 const refEditor = useTemplateRef("refEditor")
-
-//
-const loadFlashcard = async ({ reload = false }) => {
-  refLoading.value = true
-  refShowA.value = false
-  refModel.userA = ""
-  refShowNote.value = false
-  refResult.value = null
-  let response = null
-  if (reload && refModel.id !== 0) {
-    console.log("reloading ", refModel.id)
-    response = await $fetch(`/api/get/${refModel.id}`)
-  } else {
-    console.log("getting a new random question")
-    response = await $fetch("/api/get/random")
-  }
-  if (response.ok) {
-    console.log(response.data)
-    refModel.id = response.data.id
-    refModel.q = response.data.q
-    refModel.userA = ""
-    refModel.alang = response.data.alang || "plaintext"
-    refModel.a = response.data.a
-    refModel.tags = response.data.tags
-    refModel.note = response.data.note
-    // 这里直接调用会导致monaco editor无法接受任何输入, 可能的原因是因为
-    // monaco editor还没有完全加载完成 就算用nextTick也不行
-    // 这里使用setTimeout来解决这个问题
-    // onFocus()
-    // nextTick(onFocus)
-    // setTimeout(() => {
-    //   onFocus()
-    // }, 500)
-    if (refModel.note) {
-      console.log("refNote", refNote)
-      refNote.value.innerHTML = md.render(refModel.note)
-    } else {
-      refNote.value.innerHTML = "(空)"
-      refShowNote.value = true
-    }
-  } else {
-    showErrorToast(response.message)
-  }
-  setTimeout(() => {
-    refLoading.value = false
-  }, 1000)
-}
 
 const onCheckA = () => {
   if (refModel.userA.trim() === refModel.a.trim()) {
@@ -155,43 +103,52 @@ const onEdit = () => {
   router.push(`/edit/${refModel.id}`)
 }
 
-const init = async () => {
-  // 使用shikijs作为markdown的代码高亮
-  md.use(
-    await shiki({
-      theme: "vitesse-dark",
-    })
-  )
-  // 监听键盘事件
-  // TODO: 这里的事件监听有点问题
-  // 它在production模式下没有生效, 原因可能是没有被编译到js中
-  // 这里暂时通过执行输出的结果让编译器认为它被使用了
-  // const _ = defineShortcuts({
-  //   a: () => {
-  //     onFocus()
-  //   },
-  // })
-  // console.log("defined shortcuts", _)
-
-  if (Number.isInteger(Number.parseInt(route.params.id))) {
-    refModel.id = Number.parseInt(route.params.id)
-    loadFlashcard({ reload: true })
-  } else {
-    // 如果是新建卡片，直接赋值
-    refModel.id = 0
-    loadFlashcard({ reload: false })
-  }
-}
-
 // 根据refModel.id的变化，自动跳转到url
-watch(
-  () => refModel.id,
-  (newId, _) => {
-    router.replace(`/exec/${newId}`)
-  }
-)
+// watch(
+//   () => refModel.id,
+//   (newId, _) => {
+//     router.replace(`/exec/${newId}`)
+//   }
+// )
 
 onMounted(async () => {
-  await init()
+  // redirect to /exec/:id
+  console.log("refModel.id", refModel.id)
+  if (!refModel.id) {
+    const response = await $fetch("/api/get/random-id")
+    if (response.ok) {
+      router.push(`/exec/${response.data.id}`)
+      return
+    } else {
+      showErrorToast(response.message)
+    }
+  }
+  const response = await $fetch(`/api/get/${refModel.id}`)
+  if (response.ok) {
+    console.log(response.data)
+    refModel.q = response.data.q
+    refModel.userA = ""
+    refModel.alang = response.data.alang || "plaintext"
+    refModel.a = response.data.a
+    refModel.tags = response.data.tags
+    refModel.note = response.data.note
+    // 这里直接调用会导致monaco editor无法接受任何输入, 可能的原因是因为
+    // monaco editor还没有完全加载完成 就算用nextTick也不行
+    // 这里使用setTimeout来解决这个问题
+    // onFocus()
+    // nextTick(onFocus)
+    // setTimeout(() => {
+    //   onFocus()
+    // }, 500)
+    if (refModel.note) {
+      console.log("refNote", refNote)
+      refNote.value.innerHTML = md.render(refModel.note)
+    } else {
+      refNote.value.innerHTML = "(空)"
+      refShowNote.value = true
+    }
+  } else {
+    //showErrorToast(response.message)
+  }
 })
 </script>
