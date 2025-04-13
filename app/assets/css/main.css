@@ -28,19 +28,20 @@
 }
 
 .markdown {
-  font-size: 1rem;
-  color: rgb(171, 171, 171);
+  color: rgb(210, 210, 210);
+  /* font-size: 1rem; */
 }
-.markdown :deep(h1),
-.markdown :deep(h2),
-.markdown :deep(h3) {
+.markdown h1,
+.markdown h2,
+.markdown h3 {
   font-size: 1.2rem;
   margin: 1rem 0;
 }
 
-.markdown :deep(:not(pre) > code) {
-  color: bisque;
-  background-color: #222;
+.markdown :not(pre)  code {
+  background-color: #333;
+  /* color: bisque; */
+  font-size: 1rem;
 }
 
 .markdown pre code {
