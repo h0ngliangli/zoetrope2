@@ -134,6 +134,9 @@ const loadNext = async () => {
 }
 
 const parseResponse = (response) => {
+  refResult.value = null
+  refShowA.value = false
+  refShowNote.value = false
   console.log(response.data)
   refModel.id = response.data.id
   refModel.q = response.data.q
