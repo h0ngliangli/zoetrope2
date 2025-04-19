@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-const { loggedIn, user, clear, openInPopup } = useUserSession()
+const { loggedIn, clear } = useUserSession()
 
 const refKw = ref("")
 const refInputKw = ref(null)
