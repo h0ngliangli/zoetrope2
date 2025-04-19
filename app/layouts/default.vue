@@ -3,29 +3,20 @@
     <header
       class="bg-gray-800 text-white p-1 flex flex-row items-center gap-4 pl-4"
     >
-      <ULink to="/add"
-        >新建<ShortcutHere
-          keys="shift_n"
-          @keydown="
-            () => {
-              navigateTo({ path: '/add' })
-            }
-          "
-      /></ULink>
-      <ULink to="/exec"
-        >练习<ShortcutHere
-          keys="shift_e"
-          @keydown="
-            () => {
-              navigateTo({ path: '/exec' })
-            }
-          "
-      /></ULink>
+      <ULink to="/add" :disabled="!loggedIn">
+        新建
+        <ShortcutHere keys="shift_n" @keydown="navigateTo({ path: '/add' })" />
+      </ULink>
+      <ULink to="/exec" :disabled="!loggedIn">
+        练习
+        <ShortcutHere keys="shift_e" @keydown="navigateTo({ path: '/exec' })" />
+      </ULink>
       <UInput
         ref="refInputKw"
         v-model="refKw"
         class="w-32"
         placeholder="关键字或id"
+        :disabled="!loggedIn"
         @keydown.enter="onEdit"
       >
         <!-- search 快捷键 -->
@@ -41,6 +32,11 @@
           />
         </template>
       </UInput>
+      <div class="flex flex-row items-center gap-2 ml-auto">
+        <UButton v-if="!loggedIn" @click="login()">Google登陆</UButton>
+        <UAvatar :src="loggedIn ? `/api/avatar` : null" />
+        <UButton v-if="loggedIn" @click="logout()">退出</UButton>
+      </div>
     </header>
     <main class="flex-grow p-4">
       <slot />
@@ -49,8 +45,21 @@
 </template>
 
 <script setup>
+const { loggedIn, user, clear, openInPopup } = useUserSession()
+
 const refKw = ref("")
 const refInputKw = ref(null)
+const router = useRouter()
+
+const login = () => {
+  window.location.href = "/api/auth/google"
+}
+
+const logout = async () => {
+  await clear()
+  router.replace("/")
+}
+
 const onEdit = async () => {
   let kw = refKw.value
   refKw.value = ""
