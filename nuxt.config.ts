@@ -14,7 +14,6 @@ export default defineNuxtConfig({
   // 原因可能是因为@nuxt/content和@nuxtjs/mdc都会对路由进行处理,但是@nuxt/content的优先级更高.
   // 并且两者使用相同的底层代码.
   modules: [
-    "nuxt-vue3-google-signin",
     "@nuxt/ui",
     "@nuxt/eslint",
     "@nuxtjs/mdc",
@@ -36,18 +35,16 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    // /add -> /edit-new
     "/add": { redirect: "/edit/new" },
-    // "/": { redirect: "/exec" },
   },
-  mdc: {
-    highlight: {
-      theme: "github-dark",
-      wrapperStyle: true,
-    },
-  },
-  googleSignIn: {
-    clientId:
-      "488891230000-i2bc6ibkgug1gd7vu07ukpmp5in41pr9.apps.googleusercontent.com",
-  },
+  // mdc: {
+  //   highlight: {
+  //     theme: "github-dark",
+  //     wrapperStyle: true,
+  //   },
+  // },
+  // googleSignIn: {
+  //   clientId:
+  //     "488891230000-i2bc6ibkgug1gd7vu07ukpmp5in41pr9.apps.googleusercontent.com",
+  // },
 })
