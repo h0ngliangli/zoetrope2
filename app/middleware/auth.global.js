@@ -1,4 +1,11 @@
 export default defineNuxtRouteMiddleware((to, from) => {
+  console.log("auth.global.js middleware", to, from)
+  const { loggedIn } = useUserSession()
+  console.log("loggedIn", loggedIn.value)
+  if (!loggedIn.value && to.path !== "/") {
+    return navigateTo("/")
+  }
+
   // to/from object example:
   /*
 {
@@ -39,5 +46,5 @@ export default defineNuxtRouteMiddleware((to, from) => {
   //   if (isAuthenticated() === false) {
   //     return navigateTo("/login")
   //   }
-  console.log("auth.global.js middleware", to, from)
+  // console.log("auth.global.js middleware", to, from)
 })
