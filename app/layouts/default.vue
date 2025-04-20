@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-screen">
     <header
-      class="bg-gray-800 text-white p-1 flex flex-row items-center gap-4 pl-4"
+      class="bg-gray-800 text-white flex flex-row items-center px-1 sm:px-6 lg:px-8 sm:gap-1 md:gap-2 lg:gap-4"
     >
       <ULink to="/add" :disabled="!loggedIn">
         新建
@@ -40,7 +40,9 @@
             {
               label: '退出',
               icon: 'i-lucide-log-out',
-              onSelect: ()=>{logout()},
+              onSelect: () => {
+                logout()
+              },
             },
           ]"
         >
@@ -62,7 +64,7 @@ const refInputKw = ref(null)
 const router = useRouter()
 
 const login = async () => {
-  await navigateTo('/api/auth/google', { external: true })
+  await navigateTo("/api/auth/google", { external: true })
   // window.location.href = "/api/auth/google"
 }
 
