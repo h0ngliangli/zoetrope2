@@ -1,7 +1,7 @@
 <template>
   <div :id="route.hash.substring(1)" class="flex flex-col gap-2">
-    <div class="text-lg m-auto" style="max-width: 80%">
-      <MarkdownPreview v-model="refModel.q" />
+    <div class=" m-auto" style="max-width: 80%">
+      <MarkdownPreview v-model="refModel.q" style="font-size: 1.2rem" />
     </div>
     <div class="m-auto"><TagsText :text="refModel.tags" /></div>
     <div>答案<ShortcutHere keys="a" @keydown="onFocus" /></div>
