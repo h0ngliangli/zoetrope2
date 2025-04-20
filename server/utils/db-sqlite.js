@@ -14,6 +14,12 @@ export const utilDbInit = async () => {
         log text,
         primary key (id autoincrement)
     )`
+  await db.sql`create table if not exists user (
+    email text primary key,
+    name text,
+    avatar text
+  )`
+  await db.sql`insert into user (email, name) values ('woodyli82@gmail.com', 'Hongliang Li') on conflict do nothing`
   await _loadIds()
   _shuffle(ids)
 }
@@ -89,14 +95,21 @@ export const utilDbSearch = async (keyword) => {
     return []
   }
   const sqlResult = await db.sql`select * from flashcard where
-    q like ${`%${keyword}%`} or 
-    a like ${`%${keyword}%`} or 
+    q like ${`%${keyword}%`} or
+    a like ${`%${keyword}%`} or
     tags like ${`%${keyword} %`}`
   logger.debug("查找关键字 %s 返回%s条记录.", keyword, sqlResult.rows.length)
   return sqlResult.rows.map((row) => {
     row.tags = row.tags.trim()
     return row
   })
+}
+
+// 检查用户是否存在
+export const utilDbUserExists = async (email) => {
+  const sqlResult =
+    await db.sql`select count(*) as count from user where email = ${email}`
+  return sqlResult.rows[0].count > 0
 }
 
 const _flashcardIdExists = async (id) => {
