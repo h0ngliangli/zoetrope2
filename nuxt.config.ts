@@ -18,7 +18,6 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxt/eslint",
     "@nuxtjs/mdc",
-    "@nuxt/content",
     "nuxt-auth-utils",
   ],
   css: ["~/assets/css/main.css"],
