@@ -33,9 +33,19 @@
         </template>
       </UInput>
       <div class="flex flex-row items-center gap-2 ml-auto">
-        <UButton v-if="!loggedIn" @click="login()">Google登陆</UButton>
-        <UAvatar :src="loggedIn ? `/api/avatar` : null" />
-        <UButton v-if="loggedIn" @click="logout()">退出</UButton>
+        <UButton v-if="!loggedIn" @click="login()">登陆</UButton>
+        <UDropdownMenu
+          v-else
+          :items="[
+            {
+              label: '退出',
+              icon: 'i-lucide-log-out',
+              onSelect: ()=>{logout()},
+            },
+          ]"
+        >
+          <UAvatar :src="loggedIn ? `/api/avatar` : null" />
+        </UDropdownMenu>
       </div>
     </header>
     <main class="flex-grow p-4">
