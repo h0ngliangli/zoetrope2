@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     !session.user &&
     event.path !== "/" &&
     !event.path.startsWith("/api/auth/") &&
-    !event.path.startsWith("/api/_auth/")
+    !event.path.startsWith("/api/_")
   ) {
     return sendRedirect(event, "/")
   }
