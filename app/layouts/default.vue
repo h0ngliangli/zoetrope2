@@ -61,8 +61,9 @@ const refKw = ref("")
 const refInputKw = ref(null)
 const router = useRouter()
 
-const login = () => {
-  window.location.href = "/api/auth/google"
+const login = async () => {
+  await navigateTo('/api/auth/google', { external: true })
+  // window.location.href = "/api/auth/google"
 }
 
 const logout = async () => {
