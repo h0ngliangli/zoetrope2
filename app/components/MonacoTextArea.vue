@@ -1,4 +1,4 @@
-<!-- 
+<!--
   这个组件是一个基于 Monaco Editor 的文本编辑器，支持多种编程语言的语法高亮和自动补全功能。
   用法:
   <MonacoTextArea
@@ -150,7 +150,7 @@ const autoAjustEditorHeight = (event) => {
   monacoEditor.layout() // 重新布局
 }
 
-// 案件处理: 当按下esc键时，blur
+// 按键处理: 当按下esc键时，blur
 const blurOnEsc = (event) => {
   // console.log("event.code", event.code)
   if (event.code === "Escape") {
