@@ -112,6 +112,24 @@ export const utilDbUserExists = async (email) => {
   return sqlResult.rows[0].count > 0
 }
 
+export const utilDbDelete = async (id) => {
+  logger.info("删除卡片 %s", id)
+  const sqlResult = await db.sql`delete from flashcard where id = ${id}`
+  if (sqlResult.changes === 0) {
+    logger.error("没有找到对应的卡片")
+    return {successful: false, message: "没有找到对应的卡片"}
+  }
+  logger.debug("删除卡片 %s 成功", id)
+  // 从ids中删除
+  const index = ids.indexOf(id)
+  if (index > -1) {
+    ids.splice(index, 1)
+  }
+  logger.debug("ids %s left", ids.length)
+  return { successful: true, message: "删除卡片成功" }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 const _flashcardIdExists = async (id) => {
   logger.debug("checking if flashcard id exists %o", id)
   const sqlResult =

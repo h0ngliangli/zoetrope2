@@ -72,6 +72,22 @@
         保存(shift+s)
         <ShortcutHere keys="shift_s" hidden @keydown="save" />
       </UButton>
+      <!-- 删除按钮 -->
+      <UModal
+        title="确认删除"
+        description="删除后无法恢复，请谨慎操作。"
+        :close="{
+          color: 'primary',
+          class: 'rounded-full',
+        }"
+      >
+        <UButton v-if="refModel.id !== 'new'" color="error"> 删除 </UButton>
+        <template #body>
+          <div class="flex flex-row gap-2 justify-center">
+            <UButton color="error" @click="del">确认删除</UButton>
+          </div>
+        </template>
+      </UModal>
     </div>
     <UFormField>
       <template #label>
@@ -165,6 +181,18 @@ const save = async () => {
   setTimeout(() => {
     refModel.loading = false
   }, 1000)
+}
+
+const del = async () => {
+  const response = await $fetch(`/api/delete/${refModel.id}`, {
+    method: "DELETE",
+  })
+  if (response.ok) {
+    showSuccessToast(`卡片 ${refModel.id} 删除成功`)
+    router.replace("/edit/new")
+  } else {
+    showErrorToast(response.message)
+  }
 }
 
 // 根据refModel.id的变化，自动跳转到url
