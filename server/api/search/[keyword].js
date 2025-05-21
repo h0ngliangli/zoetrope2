@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const keyword = getRouterParam(event, "keyword")
+  const keyword = decodeURIComponent(getRouterParam(event, "keyword"))
   logger.debug("search %s", keyword)
   if (!keyword) {
     return {
